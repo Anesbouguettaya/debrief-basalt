@@ -1,0 +1,42 @@
+# Identifiant : appel_02_dubois
+# Appel : sortant (demande de rappel)
+# Date : 2026-10-22 10:15
+# Conseiller : Hugo Bernard
+# Client : Claire Dubois
+# Contact HubSpot : 48377
+[00:00] Hugo Bernard : Bonjour Madame Dubois, Hugo Bernard, conseiller chez Basalt. Vous avez demandé à être rappelée depuis notre site, je ne vous dérange pas ?
+[00:08] Claire Dubois : Bonjour. Non, pas du tout, je vous attendais.
+[00:11] Hugo Bernard : Merci. Dites-moi ce qui vous amène.
+[00:14] Claire Dubois : J'ai vendu mon appartement à Lyon, la vente a été signée en septembre pour 320 000 euros. Je voudrais placer 250 000 euros et garder le reste sur mon compte et mes livrets pour les imprévus.
+[00:28] Hugo Bernard : D'accord. Quel est votre objectif principal pour ces 250 000 euros ?
+[00:33] Claire Dubois : Avant tout, transmettre quelque chose à mes trois petits-enfants. Et peut-être faire quelques retraits de temps en temps pour les aider, pour leurs études ou leur permis.
+[00:45] Hugo Bernard : C'est un beau projet. Puis-je vous demander votre âge ?
+[00:48] Claire Dubois : J'ai 67 ans.
+[00:50] Hugo Bernard : Et votre situation familiale ?
+[00:52] Claire Dubois : Je suis veuve depuis quatre ans. J'ai deux enfants et trois petits-enfants.
+[00:57] Hugo Bernard : Et vos revenus aujourd'hui ?
+[00:59] Claire Dubois : J'étais pharmacienne, je suis à la retraite. Ma pension, c'est un peu plus de 2 800 euros par mois.
+[01:07] Hugo Bernard : Merci. Avez-vous d'autres placements ?
+[01:10] Claire Dubois : Mon Livret A, un LDDS, et un vieux contrat d'assurance-vie en euros à la banque, avec environ 40 000 euros. Je n'ai jamais eu que des livrets et un contrat en euros, je n'ai jamais fait de bourse.
+[01:23] Hugo Bernard : Très bien. Si ce placement baissait temporairement, comment réagiriez-vous ?
+[01:28] Claire Dubois : Ah, je ne veux surtout pas perdre ce capital, c'est toute la vente de l'appartement. Perdre 10 %, pour moi, ce serait déjà beaucoup.
+[01:37] Hugo Bernard : C'est important de le dire. Sur quelle durée envisagez-vous ce placement ?
+[01:41] Claire Dubois : Au moins huit à dix ans, sauf coup dur.
+[01:45] Hugo Bernard : Entendu. Avez-vous des préférences sur la façon dont votre argent est investi ? Certains clients souhaitent des critères environnementaux ou des exclusions.
+[01:53] Claire Dubois : Oui, j'aimerais éviter les armes et le pétrole, si c'est possible.
+[01:58] Hugo Bernard : C'est possible, nous avons des supports avec ce type d'exclusions. Pour la répartition, avec votre profil, je partirais sur une large part de fonds en euros.
+[02:07] Claire Dubois : Ma fille m'a dit de mettre la moitié en SCPI, que ça rapportait plus.
+[02:12] Hugo Bernard : Je comprends. Je dois vous préciser que les SCPI ne sont pas garanties : la valeur des parts peut baisser, il y a un risque de perte en capital, et on ne peut pas toujours les revendre rapidement. Avec ce que vous m'avez dit, la moitié me paraît trop.
+[02:27] Claire Dubois : Bon… disons 40 % en SCPI alors, et le reste sur le fonds en euros.
+[02:32] Hugo Bernard : Je vous recommanderais plutôt 20 à 25 %. Je vais vous préparer deux propositions, une à 80/20 et une à 70/30, avec les risques de chacune.
+[02:41] Claire Dubois : Très bien, je regarderai avec ma fille.
+[02:44] Hugo Bernard : Autre point important à votre âge : les versements faits avant 70 ans bénéficient d'un abattement de 152 500 euros par bénéficiaire lors de la transmission. Après 70 ans, l'abattement est de 30 500 euros au total sur les versements, mais les gains sont exonérés.
+[03:00] Claire Dubois : Donc j'ai intérêt à tout verser maintenant ?
+[03:03] Hugo Bernard : Pour votre objectif de transmission, verser avant vos 70 ans est généralement plus avantageux, oui. Pour la clause bénéficiaire, vous pensez à vos trois petits-enfants ?
+[03:12] Claire Dubois : Oui, les trois à parts égales.
+[03:15] Hugo Bernard : Noté. Pour un versement de ce montant, il nous faudra aussi un justificatif de l'origine des fonds, dans votre cas l'acte de vente de l'appartement.
+[03:24] Claire Dubois : Je l'ai, le notaire me l'a envoyé.
+[03:27] Hugo Bernard : Parfait. Je vous propose un rendez-vous en visio avec votre fille pour présenter les deux propositions. Jeudi 29 octobre à 10 heures, ça vous irait ?
+[03:36] Claire Dubois : Oui, c'est parfait.
+[03:38] Hugo Bernard : Je vous envoie l'invitation et les deux simulations d'ici lundi. Merci Madame Dubois.
+[03:43] Claire Dubois : Merci à vous, au revoir.

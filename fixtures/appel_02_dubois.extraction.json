@@ -1,0 +1,135 @@
+{
+  "compte_rendu": {
+    "resume": "Claire Dubois, 67 ans, pharmacienne retraitée et veuve, souhaite placer 250 000 € issus de la vente de son appartement lyonnais pour transmettre à ses trois petits-enfants, avec d'éventuels retraits ponctuels. Profil pressenti prudent : une perte de 10 % serait déjà importante pour elle. Elle souhaite exclure l'armement et le pétrole. Sur le conseil de sa fille, elle envisage 40 % de SCPI ; le conseiller l'a mise en garde et recommande 20 à 25 %. Rendez-vous en visio avec sa fille le jeudi 29 octobre à 10 h pour présenter deux allocations (80/20 et 70/30).",
+    "points_cles": [
+      {
+        "texte": "Vente d'un appartement à Lyon signée en septembre pour 320 000 € ; 250 000 € à placer, le reste conservé en liquidités.",
+        "source": "J'ai vendu mon appartement à Lyon, la vente a été signée en septembre pour 320 000 euros"
+      },
+      {
+        "texte": "Objectif principal : transmettre à ses trois petits-enfants, avec des retraits ponctuels possibles pour les aider.",
+        "source": "Avant tout, transmettre quelque chose à mes trois petits-enfants"
+      },
+      {
+        "texte": "Forte aversion au risque : une perte de 10 % serait déjà beaucoup.",
+        "source": "Perdre 10 %, pour moi, ce serait déjà beaucoup"
+      },
+      {
+        "texte": "Souhaite exclure les secteurs de l'armement et du pétrole.",
+        "source": "j'aimerais éviter les armes et le pétrole"
+      },
+      {
+        "texte": "Clause bénéficiaire envisagée : ses trois petits-enfants à parts égales.",
+        "source": "Oui, les trois à parts égales"
+      }
+    ],
+    "questions_client": [
+      {
+        "question": "A-t-elle intérêt à tout verser avant ses 70 ans ?",
+        "reponse": "Pour un objectif de transmission, verser avant 70 ans est généralement plus avantageux : abattement de 152 500 € par bénéficiaire, contre 30 500 € au total sur les versements après 70 ans (gains exonérés).",
+        "source": "Donc j'ai intérêt à tout verser maintenant ?"
+      }
+    ],
+    "objections": [
+      {
+        "texte": "Sa fille lui conseille de placer la moitié en SCPI pour un meilleur rendement.",
+        "source": "Ma fille m'a dit de mettre la moitié en SCPI, que ça rapportait plus"
+      }
+    ],
+    "prochaines_etapes": [
+      {
+        "action": "Préparer deux propositions (80/20 et 70/30) avec les risques de chacune",
+        "porteur": "conseiller",
+        "echeance": "2026-10-26",
+        "type": "document",
+        "source": "Je vais vous préparer deux propositions, une à 80/20 et une à 70/30"
+      },
+      {
+        "action": "Envoyer l'invitation visio et les deux simulations",
+        "porteur": "conseiller",
+        "echeance": "2026-10-26",
+        "type": "email",
+        "source": "Je vous envoie l'invitation et les deux simulations d'ici lundi"
+      },
+      {
+        "action": "Rendez-vous en visio avec Mme Dubois et sa fille",
+        "porteur": "conseiller",
+        "echeance": "2026-10-29T10:00",
+        "type": "rdv",
+        "source": "Jeudi 29 octobre à 10 heures, ça vous irait ?"
+      },
+      {
+        "action": "Fournir l'acte de vente de l'appartement",
+        "porteur": "client",
+        "echeance": "",
+        "type": "document",
+        "source": "dans votre cas l'acte de vente de l'appartement"
+      }
+    ],
+    "intention": "moyenne",
+    "intention_source": "Très bien, je regarderai avec ma fille"
+  },
+  "recueil": {
+    "objectifs": {"statut": "couvert", "valeur": "Transmission aux petits-enfants, retraits ponctuels possibles", "source": "Avant tout, transmettre quelque chose à mes trois petits-enfants"},
+    "horizon": {"statut": "couvert", "valeur": "Au moins 8 à 10 ans", "source": "Au moins huit à dix ans, sauf coup dur"},
+    "situation_familiale": {"statut": "couvert", "valeur": "Veuve, deux enfants, trois petits-enfants", "source": "Je suis veuve depuis quatre ans"},
+    "situation_professionnelle": {"statut": "couvert", "valeur": "Pharmacienne retraitée", "source": "J'étais pharmacienne, je suis à la retraite"},
+    "revenus": {"statut": "couvert", "valeur": "Pension d'un peu plus de 2 800 € par mois", "source": "Ma pension, c'est un peu plus de 2 800 euros par mois"},
+    "patrimoine": {"statut": "couvert", "valeur": "Produit de vente de 320 000 € (70 000 € conservés), Livret A, LDDS, assurance-vie en euros d'environ 40 000 €", "source": "un vieux contrat d'assurance-vie en euros à la banque, avec environ 40 000 euros"},
+    "connaissances_experience": {"statut": "couvert", "valeur": "Aucune expérience des marchés : livrets et fonds en euros uniquement", "source": "je n'ai jamais fait de bourse"},
+    "tolerance_risque": {"statut": "couvert", "valeur": "Très faible, priorité à la préservation du capital", "source": "je ne veux surtout pas perdre ce capital"},
+    "capacite_pertes": {"statut": "couvert", "valeur": "Faible : une perte de 10 % serait déjà importante", "source": "Perdre 10 %, pour moi, ce serait déjà beaucoup"},
+    "durabilite": {"statut": "couvert", "valeur": "Exclusion de l'armement et du pétrole", "source": "j'aimerais éviter les armes et le pétrole"},
+    "besoin_liquidite": {"statut": "partiel", "valeur": "Retraits ponctuels possibles pour aider les petits-enfants", "source": "peut-être faire quelques retraits de temps en temps pour les aider"}
+  },
+  "projet": {
+    "montant_initial_eur": 250000,
+    "montant_source": "Je voudrais placer 250 000 euros",
+    "versement_mensuel_eur": 0,
+    "versement_source": "",
+    "horizon_annees": 8,
+    "profil_pressenti": "prudent",
+    "profil_source": "je ne veux surtout pas perdre ce capital",
+    "uc_souhaitee_client_pct": 40,
+    "uc_souhaitee_source": "disons 40 % en SCPI alors",
+    "uc_recommandee_conseiller_pct": 25,
+    "uc_recommandee_source": "Je vous recommanderais plutôt 20 à 25 %",
+    "mise_en_garde_orale": "oui",
+    "mise_en_garde_source": "les SCPI ne sont pas garanties : la valeur des parts peut baisser, il y a un risque de perte en capital"
+  },
+  "lcb": {
+    "origine_fonds": "cession_immobiliere",
+    "origine_detail": "vente d'un appartement à Lyon signée en septembre, 320 000 €",
+    "origine_source": "J'ai vendu mon appartement à Lyon, la vente a été signée en septembre",
+    "revenus_annuels_eur": 33600,
+    "revenus_source": "Ma pension, c'est un peu plus de 2 800 euros par mois",
+    "tiers_payeur": "non_aborde",
+    "tiers_payeur_source": "",
+    "especes": "non_aborde",
+    "especes_source": "",
+    "ppe": "non_aborde",
+    "ppe_source": "",
+    "signaux": []
+  },
+  "crm": {
+    "champs": [
+      {"propriete": "jobtitle", "valeur": "Pharmacienne retraitée", "source": "J'étais pharmacienne, je suis à la retraite"},
+      {"propriete": "situation_familiale", "valeur": "Veuve, 2 enfants, 3 petits-enfants", "source": "Je suis veuve depuis quatre ans. J'ai deux enfants et trois petits-enfants"},
+      {"propriete": "revenus_annuels", "valeur": "≈ 33 600 € / an (pension ≈ 2 800 € / mois)", "source": "un peu plus de 2 800 euros par mois"},
+      {"propriete": "patrimoine_financier", "valeur": "Livret A, LDDS, AV en euros ≈ 40 k€, 70 k€ de liquidités", "source": "un vieux contrat d'assurance-vie en euros à la banque, avec environ 40 000 euros"},
+      {"propriete": "objectif_principal", "valeur": "Transmission aux 3 petits-enfants", "source": "transmettre quelque chose à mes trois petits-enfants"},
+      {"propriete": "horizon_placement", "valeur": "8 à 10 ans", "source": "Au moins huit à dix ans"},
+      {"propriete": "profil_risque_pressenti", "valeur": "Prudent", "source": "je ne veux surtout pas perdre ce capital"},
+      {"propriete": "experience_financiere", "valeur": "Aucune (livrets et fonds en euros)", "source": "je n'ai jamais fait de bourse"},
+      {"propriete": "preference_durabilite", "valeur": "Exclusion armement et pétrole", "source": "j'aimerais éviter les armes et le pétrole"},
+      {"propriete": "origine_des_fonds", "valeur": "Cession immobilière (Lyon, septembre 2026)", "source": "la vente a été signée en septembre pour 320 000 euros"},
+      {"propriete": "montant_envisage", "valeur": "250000", "source": "Je voudrais placer 250 000 euros"},
+      {"propriete": "contrats_existants", "valeur": "Assurance-vie en euros ≈ 40 000 €", "source": "un vieux contrat d'assurance-vie en euros"},
+      {"propriete": "clause_beneficiaire", "valeur": "3 petits-enfants à parts égales", "source": "les trois à parts égales"},
+      {"propriete": "date_prochain_contact", "valeur": "Jeudi 29/10 à 10h (visio avec sa fille)", "source": "Jeudi 29 octobre à 10 heures"}
+    ],
+    "etape_transaction": "presentationscheduled",
+    "date_cloture_souhaitee": "",
+    "date_cloture_source": ""
+  }
+}

@@ -1,0 +1,1603 @@
+<title>Débrief</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Prototype d'agent IA post-appel pour conseillers en assurance-vie : compte rendu, HubSpot, contrôles DDA et LCB-FT, relance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..650;1,8..60,400..650&display=swap">
+<style>
+/* Mise en page : un dossier en deux volets. À gauche, le procès-verbal de l'appel,
+   numéros de ligne en marge ; à droite, ce que l'agent en tire. Une seule couleur
+   forte, le surligneur : réservée aux citations et à ce que produit le modèle. */
+:root {
+  --papier: #ECEFEB;
+  --feuille: #FAFBF8;
+  --feuille-2: #F2F4F0;
+  --encre: #161D1A;
+  --encre-2: #4A5751;
+  --encre-3: #727F79;
+  --filet: #D6DDD8;
+  --filet-fort: #B5BFB9;
+  --surligneur: #F4DC4A;
+  --surligneur-encre: #29230A;
+  --surligneur-doux: #F8EDAA;
+  --ok: #2B7347;      --ok-fond: #E0EFE5;
+  --action: #2C5986;  --action-fond: #E2EBF5;
+  --vigilance: #8F5D0C; --vigilance-fond: #F6EAD0;
+  --escalade: #A9291F; --escalade-fond: #F7DFDB;
+  --ombre: 0 1px 0 rgba(22, 29, 26, .05), 0 10px 28px -14px rgba(22, 29, 26, .35);
+
+  --f-titre: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-texte: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --t-xxs: .6875rem; --t-xs: .75rem; --t-s: .8125rem; --t-m: .9375rem; --t-l: 1.0625rem;
+  --t-xl: 1.375rem; --t-2xl: clamp(1.6rem, 1.25rem + 1.4vw, 2.1rem);
+  --t-titre: clamp(2.15rem, 1.1rem + 4.2vw, 3.9rem);
+  --rayon: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papier: #101412; --feuille: #171C1A; --feuille-2: #1D2320; --encre: #E6EBE7; --encre-2: #A7B2AC; --encre-3: #7C8983;
+    --filet: #29312D; --filet-fort: #3A4440; --surligneur: #E9D24B; --surligneur-encre: #1C1804; --surligneur-doux: #45401A;
+    --ok: #74C795; --ok-fond: #16301F; --action: #8DB6E2; --action-fond: #162536; --vigilance: #E3B15C; --vigilance-fond: #33270F;
+    --escalade: #F08A80; --escalade-fond: #3B1815; --ombre: 0 1px 0 rgba(0, 0, 0, .3), 0 12px 30px -14px rgba(0, 0, 0, .8);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --papier: #101412; --feuille: #171C1A; --feuille-2: #1D2320; --encre: #E6EBE7; --encre-2: #A7B2AC; --encre-3: #7C8983;
+  --filet: #29312D; --filet-fort: #3A4440; --surligneur: #E9D24B; --surligneur-encre: #1C1804; --surligneur-doux: #45401A;
+  --ok: #74C795; --ok-fond: #16301F; --action: #8DB6E2; --action-fond: #162536; --vigilance: #E3B15C; --vigilance-fond: #33270F;
+  --escalade: #F08A80; --escalade-fond: #3B1815; --ombre: 0 1px 0 rgba(0, 0, 0, .3), 0 12px 30px -14px rgba(0, 0, 0, .8);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body { background: var(--papier); color: var(--encre); font: 400 var(--t-m)/1.5 var(--f-titre); -webkit-font-smoothing: antialiased; }
+.page { max-width: 1280px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 40px; }
+a { color: inherit; text-underline-offset: 3px; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--surligneur); outline-offset: 2px; }
+.mono { font-family: var(--f-mono); }
+.visuellement-cache { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* En-tête */
+.entete { display: flex; align-items: baseline; justify-content: space-between; gap: 10px 20px; flex-wrap: wrap; padding-block: 22px 14px; border-bottom: 2px solid var(--encre); }
+.marque { font: 800 1.45rem/1 var(--f-titre); font-stretch: 125%; letter-spacing: -.01em; margin: 0; }
+.marque small { font: 500 var(--t-xs)/1 var(--f-mono); font-stretch: 100%; letter-spacing: .04em; color: var(--encre-3); margin-left: 10px; }
+.entete nav { display: flex; gap: 6px 18px; flex-wrap: wrap; }
+.entete nav a { font-weight: 600; font-size: var(--t-s); color: var(--encre-2); text-decoration: none; }
+.entete nav a:hover { color: var(--encre); text-decoration: underline; text-decoration-thickness: 3px; text-decoration-color: var(--surligneur); }
+
+/* Ouverture */
+.ouverture { display: grid; grid-template-columns: minmax(0, 1fr) minmax(250px, 310px); gap: 28px 56px; align-items: end; padding-block: 44px 40px; }
+.surtitre { font: 500 var(--t-xs)/1.5 var(--f-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--encre-2); margin: 0 0 16px; }
+h1 { font: 800 var(--t-titre)/1.02 var(--f-titre); font-stretch: 112%; letter-spacing: -.025em; margin: 0; text-wrap: balance; }
+h1 mark { color: var(--surligneur-encre); background: linear-gradient(var(--surligneur), var(--surligneur)) no-repeat 0 0 / 100% 100%; padding: 0 .08em; margin: 0 -.04em; -webkit-box-decoration-break: clone; box-decoration-break: clone; animation: surligner .9s .3s cubic-bezier(.65, .05, .25, 1) both; }
+@keyframes surligner { from { background-size: 0% 100%; color: var(--encre); } to { background-size: 100% 100%; } }
+.chapo { font: 400 clamp(1.05rem, .98rem + .35vw, 1.22rem)/1.55 var(--f-texte); color: var(--encre-2); max-width: 60ch; margin: 22px 0 0; }
+.auteur { margin: 18px 0 0; font-size: var(--t-s); color: var(--encre-2); }
+.auteur strong { color: var(--encre); }
+.fiche { border: 1.5px solid var(--encre); background: var(--feuille); }
+.fiche-titre { display: flex; justify-content: space-between; gap: 8px; font: 600 var(--t-xxs)/1 var(--f-mono); letter-spacing: .07em; text-transform: uppercase; padding: 10px 14px; border-bottom: 1.5px solid var(--encre); }
+.fiche ul { list-style: none; margin: 0; padding: 0; }
+.fiche li { display: grid; grid-template-columns: 7.8em minmax(0, 1fr); gap: 12px; align-items: baseline; padding: 11px 14px; border-bottom: 1px solid var(--filet); }
+.fiche li:last-child { border-bottom: 0; }
+.fiche strong { font: 800 var(--t-xl)/1 var(--f-titre); font-stretch: 112%; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.fiche span { font-size: var(--t-s); line-height: 1.35; color: var(--encre-2); }
+
+/* Sections */
+.section { padding-block: 44px 6px; border-top: 1px solid var(--filet-fort); }
+.section-tete { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 10px 48px; align-items: end; margin-bottom: 22px; }
+.etiquette { display: block; font: 500 var(--t-xs)/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--encre-3); margin-bottom: 10px; }
+h2 { font: 800 var(--t-2xl)/1.06 var(--f-titre); font-stretch: 112%; letter-spacing: -.018em; margin: 0; text-wrap: balance; }
+.section-tete p { margin: 0; font: 400 var(--t-l)/1.55 var(--f-texte); color: var(--encre-2); max-width: 62ch; }
+
+/* Boutons */
+.btn { display: inline-flex; align-items: center; gap: 8px; font: 600 var(--t-s)/1 var(--f-titre); padding: 10px 14px; border-radius: var(--rayon); border: 1.5px solid var(--encre); background: var(--feuille); color: var(--encre); cursor: pointer; white-space: nowrap; }
+.btn:hover { background: var(--feuille-2); }
+.btn-plein { background: var(--encre); color: var(--feuille); }
+.btn-plein:hover { background: var(--encre-2); border-color: var(--encre-2); }
+.btn-live { background: var(--surligneur); color: var(--surligneur-encre); border-color: var(--surligneur); }
+.btn-live:hover { background: var(--surligneur); filter: brightness(.95); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn-lien { background: none; border: 0; padding: 0; font: 600 var(--t-s) var(--f-titre); text-decoration: underline; text-decoration-color: var(--surligneur); text-decoration-thickness: 2px; text-underline-offset: 3px; cursor: pointer; color: var(--encre); }
+
+/* Scénarios */
+.scenarios { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 12px; }
+.scenarios.avec-live { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.scenario { display: grid; gap: 5px; align-content: start; text-align: left; background: var(--feuille); border: 1.5px solid var(--filet-fort); border-radius: var(--rayon); padding: 12px 14px 13px; cursor: pointer; }
+.scenario:hover { border-color: var(--encre); }
+.scenario[aria-selected="true"] { background: var(--encre); color: var(--feuille); border-color: var(--encre); }
+.sc-num { font: 500 var(--t-xxs)/1 var(--f-mono); letter-spacing: .07em; text-transform: uppercase; color: var(--encre-3); }
+.sc-titre { font: 700 var(--t-l)/1.2 var(--f-titre); }
+.sc-meta { font: 400 var(--t-xs)/1.35 var(--f-mono); color: var(--encre-2); }
+.sc-accroche { font: italic 400 var(--t-s)/1.4 var(--f-texte); color: var(--encre-2); }
+.scenario[aria-selected="true"] .sc-num, .scenario[aria-selected="true"] .sc-meta, .scenario[aria-selected="true"] .sc-accroche { color: inherit; opacity: .78; }
+.scenario-live .sc-num::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--surligneur); margin-right: 6px; vertical-align: 1px; }
+
+/* Chaîne de traitement */
+.chaine { background: var(--feuille); border: 1.5px solid var(--filet-fort); border-radius: var(--rayon); margin-bottom: 12px; overflow: hidden; }
+.chaine-barre { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 10px 14px; border-bottom: 1px solid var(--filet); }
+.mode { display: flex; align-items: center; gap: 8px; font: 500 var(--t-xs)/1.45 var(--f-mono); color: var(--encre-2); min-width: 0; }
+.mode::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--encre-3); }
+.mode[data-mode="live"]::before { background: var(--surligneur); box-shadow: 0 0 0 3px var(--surligneur-doux); }
+.mode .btn-lien { font-size: var(--t-xs); }
+.chaine-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.etapes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.etape { position: relative; display: grid; gap: 5px; align-content: start; padding: 12px 14px 14px; border-right: 1px solid var(--filet); min-width: 0; transition: opacity .25s; }
+.etape:last-child { border-right: 0; }
+.etape::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: transparent; }
+.etape-haut { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.etape-num { font: 600 var(--t-xs)/1 var(--f-mono); color: var(--encre-3); font-variant-numeric: tabular-nums; }
+.type { font: 600 .625rem/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; padding: 3px 5px 3px; border-radius: 3px; white-space: nowrap; }
+.type-llm { background: var(--surligneur); color: var(--surligneur-encre); }
+.type-code { background: var(--encre); color: var(--feuille); }
+.type-humain { box-shadow: inset 0 0 0 1px var(--encre); color: var(--encre); }
+.etape-nom { font: 700 var(--t-m)/1.2 var(--f-titre); }
+.etape-detail { font: 400 var(--t-xs)/1.4 var(--f-mono); color: var(--encre-2); min-height: 2.8em; overflow-wrap: anywhere; }
+.etape[data-etat="attente"] { opacity: .42; }
+.etape[data-etat="encours"]::after { background: linear-gradient(90deg, transparent 0 30%, var(--surligneur) 30% 70%, transparent 70%) 0 0 / 200% 100%; animation: defiler 1s linear infinite; }
+.etape[data-etat="encours"] .etape-num::after { content: ""; display: inline-block; width: 7px; height: 7px; margin-left: 6px; border-radius: 50%; background: var(--surligneur); vertical-align: 0; animation: pulser 1s ease-in-out infinite; }
+.etape[data-etat="fait"]::after { background: var(--encre); }
+.etape[data-etat="fait"] .etape-num::before { content: "✓ "; color: var(--ok); }
+.etape[data-etat="alerte"]::after { background: var(--escalade); }
+.etape[data-etat="alerte"] .etape-num::before { content: "! "; color: var(--escalade); font-weight: 700; }
+.etape[data-etat="humain"]::after { background: repeating-linear-gradient(90deg, var(--encre) 0 6px, transparent 6px 10px); }
+@keyframes defiler { to { background-position: -200% 0; } }
+@keyframes pulser { 50% { opacity: .25; } }
+.compteurs { display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 10px 14px; border-top: 1px solid var(--filet); font: 400 var(--t-xs)/1.45 var(--f-mono); color: var(--encre-2); }
+.compteurs b { font-weight: 600; color: var(--encre); }
+.console { margin: 0; padding: 10px 14px; border-top: 1px solid var(--filet); background: var(--feuille-2); font: 400 var(--t-xxs)/1.5 var(--f-mono); color: var(--encre-2); max-height: 7.6em; overflow: hidden; white-space: pre-wrap; word-break: break-all; -webkit-mask-image: linear-gradient(transparent, #000 45%); mask-image: linear-gradient(transparent, #000 45%); }
+.message { margin: 0; padding: 10px 14px; border-top: 1px solid var(--filet); font-size: var(--t-s); }
+.message.erreur { background: var(--escalade-fond); color: var(--escalade); }
+
+/* Atelier : procès-verbal + résultats */
+.atelier { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-areas: "pv onglets" "pv panneau"; grid-template-rows: auto 1fr; column-gap: 12px; align-items: start; }
+.onglets { grid-area: onglets; display: flex; gap: 2px; padding: 0 8px; overflow-x: auto; scrollbar-width: none; background: var(--feuille); border: 1.5px solid var(--filet-fort); border-bottom: 1px solid var(--filet); border-radius: var(--rayon) var(--rayon) 0 0; }
+.onglets::-webkit-scrollbar { display: none; }
+.onglet { display: inline-flex; align-items: center; gap: 6px; padding: 14px 10px 11px; margin-bottom: -1px; background: none; border: 0; border-bottom: 2.5px solid transparent; font: 600 var(--t-s)/1 var(--f-titre); color: var(--encre-2); cursor: pointer; white-space: nowrap; }
+.onglet:hover { color: var(--encre); }
+.onglet[aria-selected="true"] { color: var(--encre); border-bottom-color: var(--encre); }
+.onglet-appel { display: none; }
+.compte { font: 500 var(--t-xxs)/1 var(--f-mono); padding: 3px 6px; border-radius: 9px; background: var(--feuille-2); color: var(--encre-2); box-shadow: inset 0 0 0 1px var(--filet); }
+.compte.st-vigilance { background: var(--vigilance-fond); color: var(--vigilance); box-shadow: none; }
+.compte.st-escalade { background: var(--escalade-fond); color: var(--escalade); box-shadow: none; }
+.compte.st-ok { background: var(--ok-fond); color: var(--ok); box-shadow: none; }
+.panneau { grid-area: panneau; min-width: 0; min-height: 420px; padding: 20px 20px 24px; background: var(--feuille); border: 1.5px solid var(--filet-fort); border-top: 0; border-radius: 0 0 var(--rayon) var(--rayon); }
+.panneau[aria-busy="true"] > * { opacity: .35; transition: opacity .2s; }
+.pv { grid-area: pv; position: sticky; top: max(12px, env(safe-area-inset-top, 0px)); max-height: calc(100vh - 24px); display: flex; flex-direction: column; min-width: 0; background: var(--feuille); border: 1.5px solid var(--filet-fort); border-radius: var(--rayon); }
+.pv-tete { display: grid; gap: 3px; padding: 12px 14px; border-bottom: 1px solid var(--filet); }
+.pv-titre { display: flex; justify-content: space-between; gap: 8px; font: 600 var(--t-xxs)/1.2 var(--f-mono); letter-spacing: .07em; text-transform: uppercase; }
+.pv-titre span { color: var(--encre-3); font-weight: 500; }
+.pv-meta { font-size: var(--t-s); color: var(--encre-2); }
+.pv-corps { position: relative; overflow-y: auto; overscroll-behavior: contain; padding: 6px 0 14px; }
+.pv-lignes { list-style: none; margin: 0; padding: 0; }
+.pv-ligne { display: grid; grid-template-columns: 2.4em 3.3em minmax(0, 1fr); gap: 0 8px; padding: 6px 14px 6px 4px; border-left: 3px solid transparent; transition: background-color .3s; }
+.pv-num, .pv-heure { font: 500 var(--t-xxs)/2.1 var(--f-mono); color: var(--encre-3); font-variant-numeric: tabular-nums; }
+.pv-num { text-align: right; }
+.pv-loc { display: block; font: 600 var(--t-xxs)/2.1 var(--f-titre); letter-spacing: .05em; text-transform: uppercase; color: var(--encre-3); }
+.role-conseiller .pv-loc { color: var(--encre); }
+.pv-texte { margin: 0; font: 400 var(--t-m)/1.5 var(--f-texte); }
+.role-conseiller .pv-texte { color: var(--encre-2); }
+.pv-ligne.surligne { background: var(--surligneur-doux); border-left-color: var(--surligneur); }
+.pv-ligne.surligne .pv-texte { color: var(--encre); }
+.pv-texte mark { background: var(--surligneur); color: var(--surligneur-encre); padding: 0 .08em; border-radius: 2px; }
+.saisie { display: grid; gap: 10px; padding: 14px; }
+.saisie label { font: 600 var(--t-s) var(--f-titre); }
+.saisie .aide { margin: 0; font-size: var(--t-xs); color: var(--encre-2); line-height: 1.5; }
+.saisie textarea { width: 100%; min-height: 340px; resize: vertical; padding: 10px 12px; border: 1.5px solid var(--filet-fort); border-radius: var(--rayon); background: var(--feuille-2); color: var(--encre); font: 400 var(--t-xs)/1.6 var(--f-mono); }
+.saisie textarea:focus { outline: 3px solid var(--surligneur); outline-offset: 0; border-color: var(--encre); }
+.saisie-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.saisie-actions span { font-size: var(--t-xs); color: var(--encre-2); }
+
+/* Contenu des panneaux */
+.panneau h3 { font: 800 var(--t-xl)/1.15 var(--f-titre); font-stretch: 108%; letter-spacing: -.01em; margin: 0; }
+.panneau h4 { font: 600 var(--t-xxs)/1.2 var(--f-mono); letter-spacing: .07em; text-transform: uppercase; color: var(--encre-2); margin: 26px 0 10px; padding-bottom: 7px; border-bottom: 1px solid var(--filet); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.panneau h4 small { font-weight: 400; letter-spacing: .02em; text-transform: none; color: var(--encre-3); }
+.sur { margin: 0 0 6px; font: 500 var(--t-xxs)/1.3 var(--f-mono); letter-spacing: .07em; text-transform: uppercase; color: var(--encre-3); }
+.tete-doc { display: flex; justify-content: space-between; align-items: start; gap: 10px 16px; flex-wrap: wrap; }
+.meta-doc { margin: 5px 0 0; font-size: var(--t-s); color: var(--encre-2); }
+.resume { margin: 16px 0 0; font: 400 var(--t-l)/1.62 var(--f-texte); max-width: 68ch; }
+.vide { display: grid; place-content: center; gap: 8px; min-height: 360px; text-align: center; color: var(--encre-2); padding: 20px; }
+.vide strong { font: 700 var(--t-l) var(--f-titre); color: var(--encre); }
+.vide p { margin: 0 auto; max-width: 44ch; font: var(--t-m)/1.5 var(--f-texte); }
+
+.cite { display: inline-block; margin-left: 6px; padding: 3px 5px 3px; border: 0; border-radius: 3px; font: 600 var(--t-xxs)/1 var(--f-mono); white-space: nowrap; vertical-align: 1px; cursor: pointer; background: var(--surligneur); color: var(--surligneur-encre); }
+.cite:hover { box-shadow: 0 0 0 1.5px var(--encre); }
+.cite-approx { background: var(--surligneur-doux); color: var(--encre); box-shadow: inset 0 0 0 1px var(--surligneur); }
+.cite-ko { background: var(--escalade-fond); color: var(--escalade); text-decoration: line-through; cursor: help; }
+.pill { display: inline-block; padding: 4px 8px; border-radius: 99px; font: 600 var(--t-xxs)/1 var(--f-mono); letter-spacing: .03em; white-space: nowrap; background: var(--feuille-2); color: var(--encre-2); box-shadow: inset 0 0 0 1px var(--filet); }
+.pill.st-ok { background: var(--ok-fond); color: var(--ok); box-shadow: none; }
+.pill.st-action { background: var(--action-fond); color: var(--action); box-shadow: none; }
+.pill.st-vigilance { background: var(--vigilance-fond); color: var(--vigilance); box-shadow: none; }
+.pill.st-escalade { background: var(--escalade-fond); color: var(--escalade); box-shadow: none; }
+
+.liste { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
+.liste li { position: relative; padding-left: 18px; font: 400 var(--t-m)/1.52 var(--f-texte); }
+.liste li::before { content: "—"; position: absolute; left: 0; color: var(--encre-3); }
+.qa { margin: 0; display: grid; gap: 12px; }
+.qa dt { font: 600 var(--t-m)/1.45 var(--f-titre); }
+.qa dd { margin: 4px 0 0; font: 400 var(--t-m)/1.52 var(--f-texte); color: var(--encre-2); }
+.frise { list-style: none; margin: 0; padding: 0; }
+.frise li { display: grid; grid-template-columns: 8.6em minmax(0, 1fr); gap: 2px 14px; padding: 10px 0; border-bottom: 1px dashed var(--filet-fort); }
+.frise li:last-child { border-bottom: 0; }
+.frise time { font: 600 var(--t-xs)/1.7 var(--f-mono); }
+.frise .quoi { font: 400 var(--t-m)/1.5 var(--f-texte); }
+.frise .qui { display: block; font: 500 var(--t-xxs)/1.4 var(--f-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--encre-3); margin-top: 2px; }
+
+/* HubSpot */
+.chiffres { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 0; padding: 0; list-style: none; }
+.chiffres li { font: 500 var(--t-xs)/1 var(--f-mono); padding: 6px 9px; border-radius: 99px; box-shadow: inset 0 0 0 1px var(--filet-fort); color: var(--encre-2); }
+.chiffres b { color: var(--encre); font-weight: 700; }
+.chiffres li.st-escalade { box-shadow: none; background: var(--escalade-fond); color: var(--escalade); }
+.chiffres li.st-escalade b { color: inherit; }
+.bloc { border: 1.5px solid var(--filet-fort); border-radius: var(--rayon); overflow: hidden; }
+.bloc-tete { display: flex; justify-content: space-between; gap: 6px 12px; flex-wrap: wrap; padding: 10px 12px; background: var(--feuille-2); border-bottom: 1px solid var(--filet); font-size: var(--t-s); }
+.bloc-tete b { font-weight: 700; }
+.bloc-tete span { color: var(--encre-2); font-family: var(--f-mono); font-size: var(--t-xs); }
+.diff-ligne { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .85fr) minmax(0, 1.4fr) 3.6em; gap: 3px 12px; align-items: baseline; padding: 9px 12px; border-bottom: 1px solid var(--filet); font-size: var(--t-s); }
+.diff-ligne:last-child { border-bottom: 0; }
+.diff-entete { font: 600 var(--t-xxs)/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--encre-3); padding-block: 9px; }
+.diff-prop { font-weight: 600; }
+.diff-prop code { display: block; margin-top: 2px; font: 400 var(--t-xxs)/1.3 var(--f-mono); color: var(--encre-3); overflow-wrap: anywhere; }
+.diff-avant { color: var(--encre-3); }
+.diff-avant.remplace { text-decoration: line-through; }
+.diff-apres { color: var(--encre); font-weight: 500; overflow-wrap: anywhere; }
+.diff-src { text-align: right; }
+.diff-src .cite { margin-left: 0; }
+.diff-ligne.inchange .diff-apres { color: var(--encre-3); font-weight: 400; }
+.diff-ligne.bloque { background: var(--escalade-fond); }
+.diff-ligne.bloque .diff-apres { color: var(--escalade); text-decoration: line-through; }
+.diff-ligne.retenu { background: var(--vigilance-fond); }
+.diff-ligne.retenu .diff-apres { color: var(--vigilance); text-decoration: line-through; }
+.diff-raison { grid-column: 1 / -1; font: 500 var(--t-xs)/1.4 var(--f-mono); }
+.bloque .diff-raison { color: var(--escalade); }
+.retenu .diff-raison { color: var(--vigilance); }
+.deux-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.paires { margin: 0; padding: 10px 12px; display: grid; gap: 7px; }
+.paires div { display: grid; grid-template-columns: 7.5em minmax(0, 1fr); gap: 10px; font-size: var(--t-s); }
+.paires dt { color: var(--encre-2); }
+.paires dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.paires dd code { font: 400 var(--t-xxs) var(--f-mono); color: var(--encre-3); font-weight: 400; margin-left: 4px; }
+.taches { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.tache { display: grid; grid-template-columns: 8.8em minmax(0, 1fr); gap: 4px 12px; padding: 10px 12px; border: 1px solid var(--filet); border-radius: var(--rayon); background: var(--feuille); }
+.tache time { font: 600 var(--t-xs)/1.6 var(--f-mono); }
+.tache-sujet { font-weight: 600; font-size: var(--t-s); line-height: 1.45; }
+.tache-corps { grid-column: 2; margin: 0; font-size: var(--t-xs); line-height: 1.5; color: var(--encre-2); white-space: pre-line; }
+.tache-tags { grid-column: 2; display: flex; flex-wrap: wrap; gap: 4px; }
+.note-crm { padding: 12px 14px; font: 400 var(--t-s)/1.55 var(--f-texte); }
+.note-crm p { margin: 0 0 8px; }
+.note-crm ul { margin: 0 0 10px; padding-left: 1.2em; }
+.valider { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 18px; padding-top: 16px; border-top: 1.5px solid var(--encre); }
+.valider p { margin: 0; flex: 1 1 240px; font-size: var(--t-s); color: var(--encre-2); }
+.confirmation { margin: 12px 0 0; padding: 10px 12px; border-radius: var(--rayon); background: var(--ok-fond); color: var(--ok); font-size: var(--t-s); }
+.requetes { display: grid; gap: 6px; margin-top: 12px; }
+.requetes details { border: 1px solid var(--filet); border-radius: var(--rayon); overflow: hidden; }
+.requetes summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; padding: 9px 12px; cursor: pointer; font-size: var(--t-s); }
+.requetes summary code { font: 400 var(--t-xs) var(--f-mono); overflow-wrap: anywhere; }
+.requetes summary span { color: var(--encre-2); }
+.methode { font: 700 var(--t-xxs)/1 var(--f-mono); padding: 3px 5px; border-radius: 3px; background: var(--encre); color: var(--feuille); }
+.requetes pre { margin: 0; padding: 10px 12px; max-height: 320px; overflow: auto; border-top: 1px solid var(--filet); background: var(--feuille-2); font: 400 var(--t-xxs)/1.55 var(--f-mono); }
+
+/* Conformité */
+.synthese { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.tuile { display: grid; gap: 6px; align-content: start; padding: 13px 14px; border: 1.5px solid var(--filet-fort); border-radius: var(--rayon); }
+.tuile-titre { font: 600 var(--t-xxs)/1 var(--f-mono); letter-spacing: .07em; text-transform: uppercase; color: var(--encre-2); }
+.tuile strong { font: 800 var(--t-xl)/1.1 var(--f-titre); font-stretch: 110%; }
+.tuile p { margin: 0; font-size: var(--t-s); line-height: 1.45; color: var(--encre-2); }
+.jauge { height: 6px; border-radius: 3px; overflow: hidden; background: var(--feuille-2); box-shadow: inset 0 0 0 1px var(--filet); }
+.jauge i { display: block; height: 100%; background: var(--encre); }
+.tuile.niveau-standard { border-color: var(--ok); }
+.tuile.niveau-standard strong { color: var(--ok); }
+.tuile.niveau-renforcee { border-color: var(--vigilance); }
+.tuile.niveau-renforcee strong { color: var(--vigilance); }
+.tuile.niveau-escalade { border-color: var(--escalade); background: var(--escalade-fond); }
+.tuile.niveau-escalade strong { color: var(--escalade); }
+.bandeau { margin-top: 12px; padding: 13px 15px; border: 1.5px solid var(--escalade); border-radius: var(--rayon); background: var(--escalade-fond); }
+.bandeau strong { display: block; font: 700 var(--t-m) var(--f-titre); color: var(--escalade); margin-bottom: 6px; }
+.bandeau ul { margin: 0; padding-left: 1.1em; display: grid; gap: 4px; font: 400 var(--t-s)/1.5 var(--f-texte); }
+.recueil { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 20px; }
+.recueil li { display: grid; grid-template-columns: 10px minmax(0, 1fr); gap: 1px 10px; padding: 8px 0; border-bottom: 1px solid var(--filet); }
+.pastille { width: 10px; height: 10px; margin-top: 4px; border-radius: 50%; }
+.st-couvert .pastille { background: var(--ok); }
+.st-partiel .pastille, .st-a_verifier .pastille { background: var(--vigilance); }
+.st-manquant .pastille { box-shadow: inset 0 0 0 2px var(--escalade); }
+.rec-lib { font-size: var(--t-s); font-weight: 600; display: flex; gap: 6px; flex-wrap: wrap; align-items: baseline; }
+.rec-lib small { font: 500 var(--t-xxs) var(--f-mono); color: var(--encre-3); font-weight: 400; }
+.st-manquant .rec-lib small { color: var(--escalade); }
+.rec-val { grid-column: 2; font: 400 var(--t-s)/1.45 var(--f-texte); color: var(--encre-2); }
+.questions { margin-top: 14px; padding: 13px 15px; border: 1.5px dashed var(--encre-2); border-radius: var(--rayon); background: var(--feuille-2); }
+.questions-tete { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.questions-tete strong { font: 700 var(--t-s) var(--f-titre); }
+.questions ol { margin: 0; padding-left: 1.3em; display: grid; gap: 6px; font: 400 var(--t-m)/1.5 var(--f-texte); }
+.regles { list-style: none; margin: 0; padding: 0; }
+.regle { display: grid; grid-template-columns: 4.4em minmax(0, 1fr); gap: 2px 12px; padding: 11px 0; border-bottom: 1px solid var(--filet); }
+.regle:last-child { border-bottom: 0; }
+.regle-id { font: 600 var(--t-xs)/1.75 var(--f-mono); }
+.regle-titre { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: var(--t-s); font-weight: 600; }
+.regle-detail { margin: 4px 0 0; font: 400 var(--t-m)/1.5 var(--f-texte); }
+.regle-action { margin: 5px 0 0; font-size: var(--t-s); font-weight: 600; }
+.regle-ref { margin: 5px 0 0; font: 400 var(--t-xxs)/1.5 var(--f-mono); color: var(--encre-3); }
+.regle-ref .cite { margin-left: 4px; }
+.pieces { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.pieces li { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; padding: 7px 0; border-bottom: 1px solid var(--filet); font-size: var(--t-s); }
+.note-politique { margin: 16px 0 0; font: 400 var(--t-xxs)/1.5 var(--f-mono); color: var(--encre-3); }
+
+/* Relance */
+.mail { border: 1.5px solid var(--filet-fort); border-radius: var(--rayon); overflow: hidden; }
+.mail-tete { display: grid; gap: 5px; padding: 11px 14px; border-bottom: 1px solid var(--filet); background: var(--feuille-2); font-size: var(--t-s); }
+.mail-tete div { display: grid; grid-template-columns: 4.4em minmax(0, 1fr); gap: 8px; }
+.mail-tete dt { font: 500 var(--t-xxs)/1.9 var(--f-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--encre-3); }
+.mail-tete dd { margin: 0; overflow-wrap: anywhere; }
+.mail-corps { padding: 16px 18px 6px; font: 400 var(--t-m)/1.62 var(--f-texte); }
+.mail-corps p, .mail-corps ul { margin: 0 0 13px; max-width: 66ch; }
+.mail-corps ul { padding-left: 1.2em; }
+.mail-corps .intertitre { display: block; font: 700 var(--t-s)/1.5 var(--f-titre); }
+.controles { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.controles li { display: grid; grid-template-columns: 1.6em 4.6em minmax(0, 1fr); gap: 2px 8px; padding: 7px 0; border-bottom: 1px solid var(--filet); font-size: var(--t-s); align-items: baseline; }
+.controles .ico { font: 700 var(--t-s) var(--f-mono); text-align: center; }
+.controles .st-ok .ico { color: var(--ok); }
+.controles .st-ko .ico { color: var(--escalade); }
+.controles .st-na .ico { color: var(--encre-3); }
+.controles code { font: 600 var(--t-xxs) var(--f-mono); color: var(--encre-2); }
+.controles small { grid-column: 3; color: var(--encre-2); font-size: var(--t-xs); }
+.refus { margin-top: 14px; border: 1px solid var(--filet-fort); border-radius: var(--rayon); }
+.refus summary { cursor: pointer; padding: 10px 12px; font-size: var(--t-s); }
+.refus summary b { color: var(--escalade); }
+.refus .mail-corps { border-top: 1px solid var(--filet); font-size: var(--t-s); color: var(--encre-2); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 14px; }
+.actions span { font-size: var(--t-xs); color: var(--encre-2); }
+
+/* Retour (mobile) */
+.retour { position: fixed; z-index: 20; left: 50%; transform: translateX(-50%); bottom: calc(14px + env(safe-area-inset-bottom, 0px)); box-shadow: var(--ombre); }
+
+/* Impact */
+.impact { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.reglages { display: grid; gap: 18px; padding: 18px; background: var(--feuille); border: 1.5px solid var(--filet-fort); border-radius: var(--rayon); }
+.reglage { display: grid; gap: 8px; }
+.reglage label { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: var(--t-s); font-weight: 600; }
+.reglage output { font: 600 var(--t-m) var(--f-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.reglage input { width: 100%; accent-color: var(--encre); margin: 0; }
+.hypothese { margin: 0; font: italic 400 var(--t-s)/1.5 var(--f-texte); color: var(--encre-2); }
+.verdict { display: grid; gap: 16px; align-content: start; padding: 20px; border-radius: var(--rayon); background: var(--encre); color: var(--feuille); }
+.verdict .etiquette { color: inherit; opacity: .7; margin: 0; }
+.grand { margin-bottom: 10px; font: 800 clamp(2.6rem, 2rem + 3vw, 4.2rem)/1 var(--f-titre); font-stretch: 112%; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.grand mark { background: var(--surligneur); color: var(--surligneur-encre); padding: 0 .1em; }
+.verdict p { margin: 0; font: 400 var(--t-m)/1.5 var(--f-texte); opacity: .88; }
+.barres { display: grid; gap: 10px; }
+.barre { display: grid; grid-template-columns: 7.5em minmax(0, 1fr) 4.2em; gap: 10px; align-items: center; font-size: var(--t-s); }
+.barre-piste { height: 12px; border-radius: 2px; background: rgba(127, 127, 127, .25); overflow: hidden; }
+.barre-piste i { display: block; height: 100%; background: var(--feuille); transition: width .3s; }
+.barre-piste i.avec { background: var(--surligneur); }
+.barre output { font: 600 var(--t-xs) var(--f-mono); text-align: right; }
+.petits { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.petits div { padding-top: 10px; border-top: 1px solid rgba(127, 127, 127, .4); }
+.petits strong { display: block; font: 700 var(--t-xl)/1.1 var(--f-titre); font-variant-numeric: tabular-nums; }
+.petits span { font-size: var(--t-xs); opacity: .8; }
+
+/* Sous le capot */
+.principes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 26px; }
+.principe { padding-top: 12px; border-top: 2px solid var(--encre); }
+.principe h3 { font: 700 var(--t-l)/1.25 var(--f-titre); margin: 0 0 8px; }
+.principe p { margin: 0; font: 400 var(--t-m)/1.55 var(--f-texte); color: var(--encre-2); }
+.code-zone { display: grid; grid-template-columns: minmax(200px, 250px) minmax(0, 1fr); background: var(--feuille); border: 1.5px solid var(--filet-fort); border-radius: var(--rayon); overflow: hidden; }
+.code-nav { border-right: 1px solid var(--filet); padding: 12px 0; max-height: 640px; overflow-y: auto; }
+.code-nav p { margin: 0; padding: 0 14px 8px; font: 600 var(--t-xxs)/1.3 var(--f-mono); letter-spacing: .07em; text-transform: uppercase; color: var(--encre-3); }
+.code-nav p + p, .code-nav ul + p { margin-top: 14px; }
+.code-nav ul { list-style: none; margin: 0; padding: 0; }
+.code-nav button { display: flex; justify-content: space-between; gap: 8px; width: 100%; padding: 6px 14px; border: 0; background: none; text-align: left; cursor: pointer; font: 400 var(--t-xs)/1.4 var(--f-mono); color: var(--encre-2); }
+.code-nav button:hover { background: var(--feuille-2); color: var(--encre); }
+.code-nav button[aria-current="true"] { background: var(--surligneur-doux); color: var(--encre); font-weight: 600; }
+.code-nav button span { color: var(--encre-3); }
+.entrees { display: grid; gap: 2px; }
+.entrees button { font-family: var(--f-titre); font-size: var(--t-s); }
+.code-lecteur { min-width: 0; display: flex; flex-direction: column; }
+.code-tete { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--filet); font: 500 var(--t-xs) var(--f-mono); }
+.code-tete span { color: var(--encre-3); }
+.code-corps { position: relative; overflow: auto; max-height: 640px; padding: 8px 0 14px; font: 400 .78rem/1.62 var(--f-mono); tab-size: 4; }
+.cl { display: grid; grid-template-columns: 3.4em max-content; min-width: 100%; }
+.cl .n { padding-right: 12px; text-align: right; color: var(--encre-3); user-select: none; font-variant-numeric: tabular-nums; }
+.cl code { font: inherit; white-space: pre; padding-right: 18px; }
+.cl.vise { background: var(--surligneur-doux); }
+.tk-s { color: #2E6B3A; } .tk-c { color: var(--encre-3); font-style: italic; } .tk-k { color: #7A3E9D; font-weight: 600; } .tk-m { color: #A5541A; } .tk-d { color: #1F5E8C; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tk-s { color: #93D3A2; } :root:not([data-theme="light"]) .tk-k { color: #D3A6F0; } :root:not([data-theme="light"]) .tk-m { color: #F0B27A; } :root:not([data-theme="light"]) .tk-d { color: #8EC5F0; } }
+:root[data-theme="dark"] .tk-s { color: #93D3A2; } :root[data-theme="dark"] .tk-k { color: #D3A6F0; } :root[data-theme="dark"] .tk-m { color: #F0B27A; } :root[data-theme="dark"] .tk-d { color: #8EC5F0; }
+.encadre { margin-top: 26px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.encadre > div { padding: 16px 18px; border: 1.5px solid var(--filet-fort); border-radius: var(--rayon); background: var(--feuille); }
+.encadre h3 { font: 700 var(--t-l)/1.25 var(--f-titre); margin: 0 0 8px; }
+.encadre p { margin: 0; font: 400 var(--t-m)/1.55 var(--f-texte); color: var(--encre-2); }
+.encadre p + p { margin-top: 8px; }
+.pile { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; padding: 0; list-style: none; }
+.pile li { font: 500 var(--t-xs)/1 var(--f-mono); padding: 6px 8px; border-radius: 4px; box-shadow: inset 0 0 0 1px var(--filet-fort); }
+
+/* Déploiement */
+.phases { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.phase { padding: 16px 18px 18px; background: var(--feuille); border: 1.5px solid var(--filet-fort); border-radius: var(--rayon); }
+.phase-quand { font: 600 var(--t-xs)/1 var(--f-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--encre-3); }
+.phase h3 { font: 800 var(--t-xl)/1.15 var(--f-titre); font-stretch: 108%; margin: 8px 0 10px; }
+.phase ul { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; font: 400 var(--t-m)/1.5 var(--f-texte); color: var(--encre-2); }
+.phase .mesure { margin: 12px 0 0; padding-top: 10px; border-top: 1px dashed var(--filet-fort); font-size: var(--t-s); }
+.phase .mesure b { font-weight: 700; }
+
+.pied { margin-top: 48px; padding-top: 16px; border-top: 2px solid var(--encre); display: flex; justify-content: space-between; gap: 10px 24px; flex-wrap: wrap; font-size: var(--t-xs); color: var(--encre-2); }
+.pied p { margin: 0; max-width: 72ch; }
+
+/* Étroit */
+@media (max-width: 999px) {
+  .atelier { grid-template-columns: minmax(0, 1fr); grid-template-areas: "onglets" "pv" "panneau"; grid-template-rows: auto; }
+  .onglet-appel { display: inline-flex; }
+  .pv { position: static; max-height: none; border-top: 0; border-radius: 0 0 var(--rayon) var(--rayon); }
+  .atelier:not([data-onglet="appel"]) .pv { display: none; }
+  .atelier[data-onglet="appel"] .panneau { display: none; }
+  .pv-corps { overflow: visible; }
+  .etapes { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .etape:nth-child(3) { border-right: 0; }
+  .etape:nth-child(-n+3) { border-bottom: 1px solid var(--filet); }
+  .scenarios, .scenarios.avec-live { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .principes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 860px) {
+  .ouverture { grid-template-columns: minmax(0, 1fr); padding-block: 30px 30px; }
+  .section-tete, .impact, .encadre { grid-template-columns: minmax(0, 1fr); }
+  .phases { grid-template-columns: minmax(0, 1fr); }
+  .code-zone { grid-template-columns: minmax(0, 1fr); }
+  .code-nav { border-right: 0; border-bottom: 1px solid var(--filet); max-height: 260px; }
+}
+@media (max-width: 640px) {
+  .diff-ligne { grid-template-columns: minmax(0, 1fr) auto; }
+  .diff-entete { display: none; }
+  .diff-prop { grid-column: 1; grid-row: 1; }
+  .diff-src { grid-column: 2; grid-row: 1; }
+  .diff-avant, .diff-apres { grid-column: 1 / -1; }
+  .diff-avant::before { content: "avant : "; font: 500 var(--t-xxs) var(--f-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--encre-3); text-decoration: none; display: inline-block; margin-right: 4px; }
+  .diff-apres::before { content: "après : "; font: 500 var(--t-xxs) var(--f-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--encre-3); display: inline-block; margin-right: 4px; }
+  .deux-col, .synthese, .recueil, .petits { grid-template-columns: minmax(0, 1fr); }
+  .tache, .frise li { grid-template-columns: minmax(0, 1fr); }
+  .tache-corps, .tache-tags { grid-column: 1; }
+  .panneau { padding: 16px 14px 20px; }
+}
+@media (max-width: 520px) {
+  .scenarios, .scenarios.avec-live, .principes { grid-template-columns: minmax(0, 1fr); }
+  .etapes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .etape:nth-child(3) { border-right: 1px solid var(--filet); }
+  .etape:nth-child(2n) { border-right: 0; }
+  .etape:nth-child(-n+4) { border-bottom: 1px solid var(--filet); }
+  .pv-ligne { grid-template-columns: 2.1em minmax(0, 1fr); padding-right: 12px; }
+  .pv-heure { display: none; }
+  .chaine-actions, .chaine-actions .btn { width: 100%; }
+  .chaine-actions .btn { justify-content: center; }
+  .regle { grid-template-columns: minmax(0, 1fr); }
+  .controles li { grid-template-columns: 1.6em minmax(0, 1fr); }
+  .controles code { grid-column: 2; }
+  .controles span:not(.ico) { grid-column: 2; }
+  .controles small { grid-column: 2; }
+  .barre { grid-template-columns: 6.2em minmax(0, 1fr) 3.6em; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+
+<div class="page">
+  <header class="entete">
+    <p class="marque">Débrief<small>copilote post-appel</small></p>
+    <nav aria-label="Sections">
+      <a href="#demo">Démo</a>
+      <a href="#impact">Impact</a>
+      <a href="#capot">Sous le capot</a>
+      <a href="#deploiement">Déploiement</a>
+    </nav>
+  </header>
+
+  <section class="ouverture" aria-labelledby="titre">
+    <div>
+      <p class="surtitre">Prototype · candidature stage / alternance IA Engineer · Basalt</p>
+      <h1 id="titre">Le conseiller raccroche. <mark>Le CRM est déjà à jour.</mark></h1>
+      <p class="chapo">Débrief transforme un appel en compte rendu, fiche HubSpot, contrôle du devoir de conseil et de la LCB-FT, puis e-mail de relance. Chaque information est sourcée dans l'appel, chaque règle de conformité est du code testé, et rien n'est écrit sans la validation du conseiller.</p>
+      <p class="auteur">Conçu et codé par <strong>Anes Bouguettaya</strong>, octobre 2026. Appels, clients et conseillers fictifs.</p>
+    </div>
+    <aside class="fiche" aria-label="En chiffres">
+      <p class="fiche-titre" style="margin:0"><span>Fiche technique</span><span>v0.3</span></p>
+      <ul>
+        <li><strong id="f-cout">≈ 0,05 $</strong><span>coût API estimé par appel (tarifs publics)</span></li>
+        <li><strong>{{NB_REGLES}}</strong><span>règles DDA et LCB-FT, écrites en code</span></li>
+        <li><strong>{{NB_TESTS}}</strong><span>tests automatisés, tous au vert</span></li>
+        <li><strong>0</strong><span>valeur écrite dans le CRM sans citation de l'appel</span></li>
+      </ul>
+    </aside>
+  </section>
+
+  <section class="section" id="demo" aria-labelledby="titre-demo">
+    <div class="section-tete">
+      <div><span class="etiquette">Démo</span><h2 id="titre-demo">Trois appels, trois comportements</h2></div>
+      <p>Chantier n°1 de l'offre : moins de saisie après chaque appel. Choisissez un appel, puis rejouez l'analyse étape par étape : le moteur de règles qui tourne dans cette page est le même que celui du code Python, vérifié ligne à ligne. Touchez une référence « l. 12 » pour voir la phrase de l'appel qui justifie une information.</p>
+    </div>
+
+    <div class="scenarios" id="scenarios" role="tablist" aria-label="Appels de démonstration"></div>
+
+    <div class="chaine" aria-label="Chaîne de traitement">
+      <div class="chaine-barre">
+        <p class="mode" id="mode" data-mode="rejeu" style="margin:0"></p>
+        <div class="chaine-actions">
+          <button type="button" class="btn btn-plein" id="btn-rejouer">Rejouer l'analyse</button>
+          <button type="button" class="btn btn-live" id="btn-live" hidden>Analyser en direct avec Claude</button>
+          <button type="button" class="btn" id="btn-stop" hidden>Arrêter</button>
+        </div>
+      </div>
+      <ol class="etapes" id="etapes"></ol>
+      <pre class="console" id="console" hidden></pre>
+      <p class="message" id="message" role="status" hidden></p>
+      <div class="compteurs" id="compteurs"></div>
+    </div>
+
+    <div class="atelier" id="atelier" data-onglet="cr">
+      <div class="onglets" role="tablist" aria-label="Résultats" id="onglets">
+        <button type="button" class="onglet onglet-appel" role="tab" data-onglet="appel" aria-selected="false">Appel <span class="compte" id="c-appel"></span></button>
+        <button type="button" class="onglet" role="tab" data-onglet="cr" aria-selected="true">Compte rendu</button>
+        <button type="button" class="onglet" role="tab" data-onglet="crm" aria-selected="false">HubSpot <span class="compte" id="c-crm"></span></button>
+        <button type="button" class="onglet" role="tab" data-onglet="conf" aria-selected="false">Conformité <span class="compte" id="c-conf"></span></button>
+        <button type="button" class="onglet" role="tab" data-onglet="relance" aria-selected="false">Relance <span class="compte" id="c-relance"></span></button>
+      </div>
+      <aside class="pv" id="pv" aria-label="Transcription de l'appel"></aside>
+      <div class="panneau" id="panneau" role="tabpanel" aria-live="polite"></div>
+    </div>
+    <button type="button" class="btn btn-plein retour" id="retour" hidden>← Revenir au résultat</button>
+  </section>
+
+  <section class="section" id="impact" aria-labelledby="titre-impact">
+    <div class="section-tete">
+      <div><span class="etiquette">Impact</span><h2 id="titre-impact">Le temps rendu aux conseillers</h2></div>
+      <p>Un simulateur, pas une promesse. Les valeurs par défaut sont des hypothèses : la première chose que je mesurerais pendant le pilote, c'est le temps réel passé après chaque appel, avant et après Débrief.</p>
+    </div>
+    <div class="impact">
+      <form class="reglages" id="reglages" onsubmit="return false">
+        <div class="reglage">
+          <label for="r-conseillers">Conseillers <output id="o-conseillers" for="r-conseillers"></output></label>
+          <input type="range" id="r-conseillers" min="1" max="30" step="1" value="6">
+        </div>
+        <div class="reglage">
+          <label for="r-appels">Appels qualifiés par conseiller et par jour <output id="o-appels" for="r-appels"></output></label>
+          <input type="range" id="r-appels" min="1" max="20" step="1" value="8">
+        </div>
+        <div class="reglage">
+          <label for="r-avant">Minutes d'après-appel aujourd'hui <output id="o-avant" for="r-avant"></output></label>
+          <input type="range" id="r-avant" min="3" max="30" step="1" value="12">
+        </div>
+        <div class="reglage">
+          <label for="r-apres">Minutes de relecture avec Débrief <output id="o-apres" for="r-apres"></output></label>
+          <input type="range" id="r-apres" min="1" max="10" step="1" value="2">
+        </div>
+        <p class="hypothese">Après-appel : compte rendu, une quinzaine de champs HubSpot, tâches, e-mail de relance, vérification du recueil DDA. 21 jours ouvrés par mois.</p>
+      </form>
+      <div class="verdict" aria-live="polite">
+        <p class="etiquette">Chaque mois, pour l'équipe</p>
+        <div><div class="grand"><mark id="o-heures">0 h</mark></div><p id="o-heures-texte"></p></div>
+        <div class="barres">
+          <div class="barre"><span>Aujourd'hui</span><div class="barre-piste"><i id="b-avant"></i></div><output id="b-avant-v"></output></div>
+          <div class="barre"><span>Avec Débrief</span><div class="barre-piste"><i class="avec" id="b-apres"></i></div><output id="b-apres-v"></output></div>
+        </div>
+        <div class="petits">
+          <div><strong id="o-appels-mois"></strong><span>appels traités par mois</span></div>
+          <div><strong id="o-cout"></strong><span id="o-cout-texte"></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="capot" aria-labelledby="titre-capot">
+    <div class="section-tete">
+      <div><span class="etiquette">Sous le capot</span><h2 id="titre-capot">Le modèle comprend, le code décide</h2></div>
+      <p>Dans une fintech régulée, un agent utile est un agent auditable. Quatre partis pris structurent le code, que vous pouvez lire ci-dessous sans quitter la page.</p>
+    </div>
+    <div class="principes">
+      <div class="principe"><h3>Le code décide</h3><p>Claude extrait des faits dans un schéma imposé. Seuils, plafonds et escalades sont des règles Python versionnées et testées, jamais des consignes de prompt.</p></div>
+      <div class="principe"><h3>Aucun champ sans source</h3><p>Chaque valeur arrive avec une citation de l'appel. Le code la cherche dans la transcription ; si elle n'y est pas, la valeur n'atteint pas le CRM.</p></div>
+      <div class="principe"><h3>Le conseiller valide</h3><p>Débrief prépare le diff et les requêtes HubSpot, rien n'est écrit sans validation. En escalade LCB-FT, aucune relance ne part et les données sensibles restent hors du CRM.</p></div>
+      <div class="principe"><h3>Mesuré dès le jour 1</h3><p>Coût et tokens par appel, taux de citations retrouvées, jeu d'évaluation où les erreurs critiques sont comptées à part : de quoi comparer modèles et prompts sur des faits.</p></div>
+    </div>
+    <div class="code-zone">
+      <nav class="code-nav" id="code-nav" aria-label="Fichiers du dépôt"></nav>
+      <div class="code-lecteur">
+        <div class="code-tete"><b id="code-fichier"></b><span id="code-info"></span></div>
+        <div class="code-corps" id="code-corps" tabindex="0" aria-label="Contenu du fichier"></div>
+      </div>
+    </div>
+    <div class="encadre">
+      <div>
+        <h3>Pourquoi Python ici, et pas n8n ?</h3>
+        <p>n8n ou Make sont parfaits pour la plomberie : le webhook de fin d'appel de l'outil de téléphonie, la transcription, la notification Slack. La logique de conformité, elle, doit être testée unitairement, versionnée et auditable : elle vit en Python.</p>
+        <p>En production, n8n déclenche et Python décide : un nœud HTTP appelle Débrief, le conseiller valide dans HubSpot.</p>
+      </div>
+      <div>
+        <h3>La pile</h3>
+        <p>Sorties structurées de l'API Claude (schéma Pydantic imposé), cache du prompt système, modèle rapide pour la relance. API HubSpot CRM v3 sans dépendance. Le même agent est exposé comme serveur MCP, utilisable depuis Claude.</p>
+        <ul class="pile">
+          <li>Python 3.10+</li><li>SDK Anthropic</li><li>Pydantic</li><li>HubSpot CRM v3</li><li>MCP</li><li>unittest</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="deploiement" aria-labelledby="titre-deploiement">
+    <div class="section-tete">
+      <div><span class="etiquette">Déploiement</span><h2 id="titre-deploiement">Comment je le déploierais chez Basalt</h2></div>
+      <p>Construire est la moitié du travail. L'autre moitié, c'est l'adoption par les conseillers et la preuve du temps gagné.</p>
+    </div>
+    <ol class="phases">
+      <li class="phase">
+        <span class="phase-quand">Semaines 1 et 2</span>
+        <h3>Observer</h3>
+        <ul>
+          <li>Écouter une dizaine d'appels avec les conseillers.</li>
+          <li>Relever les champs HubSpot réellement utilisés.</li>
+          <li>Valider règles et seuils avec la conformité.</li>
+        </ul>
+        <p class="mesure"><b>Mesure :</b> minutes d'après-appel aujourd'hui.</p>
+      </li>
+      <li class="phase">
+        <span class="phase-quand">Semaines 3 à 6</span>
+        <h3>Piloter</h3>
+        <ul>
+          <li>Deux conseillers volontaires, Débrief en copilote.</li>
+          <li>Un jeu d'évaluation construit sur leurs appels anonymisés.</li>
+          <li>Prompts et règles ajustés chaque semaine.</li>
+        </ul>
+        <p class="mesure"><b>Mesure :</b> temps gagné, champs corrigés à la main.</p>
+      </li>
+      <li class="phase">
+        <span class="phase-quand">Mois 2 et 3</span>
+        <h3>Généraliser</h3>
+        <ul>
+          <li>Toute l'équipe, puis écriture directe des champs à faible risque.</li>
+          <li>Tableau de bord temps gagné, qualité et coût.</li>
+          <li>Extension à la préparation des rendez-vous et au back office.</li>
+        </ul>
+        <p class="mesure"><b>Mesure :</b> adoption, heures rendues par mois.</p>
+      </li>
+    </ol>
+  </section>
+
+  <footer class="pied">
+    <p>Prototype indépendant réalisé par Anes Bouguettaya pour une candidature. Appels, clients, conseillers et fiches CRM sont fictifs ; les caractéristiques de Basalt Life citées dans les appels viennent de l'offre d'emploi. Sans lien avec Basalt ni HubSpot. Les références réglementaires et les seuils sont indicatifs, à valider avec la conformité.</p>
+    <p class="mono">debrief v0.3 · politique v0.3</p>
+  </footer>
+</div>
+
+<!--MOTEUR-->
+<!--DONNEES-->
+<!--CODE-->
+<script>
+(() => {
+  "use strict";
+  const M = window.DebriefMoteur;
+  const D = JSON.parse(document.getElementById("donnees").textContent);
+  const CODE = JSON.parse(document.getElementById("code").textContent);
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+  const esc = (t) => String(t == null ? "" : t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const reduit = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const etroit = () => window.matchMedia("(max-width: 999px)").matches;
+  const attendre = (ms) => new Promise((r) => setTimeout(r, ms));
+  const nf = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
+  const usd = (x, d = 3) => x.toFixed(d).replace(".", ",") + " $";
+  const eur = (x) => nf.format(Math.round(x)) + " €";
+
+  const JOURS_C = ["lun.", "mar.", "mer.", "jeu.", "ven.", "sam.", "dim."];
+  const MOIS_C = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+  function fmtDate(s) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?/.exec(s || "");
+    if (!m) return "À planifier";
+    const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
+    const jour = `${JOURS_C[(d.getUTCDay() + 6) % 7]} ${+m[3]} ${MOIS_C[+m[2] - 1]}`;
+    return m[4] ? `${jour} · ${m[4]}:${m[5]}` : jour;
+  }
+
+  const NIVEAU = {
+    standard: ["Standard", "Aucun signal de risque relevé. Les pièces habituelles suffisent."],
+    renforcee: ["Vigilance renforcée", "Au moins un point à documenter avant la souscription."],
+    escalade: ["Escalade", "Dossier transmis au responsable LCB-FT. Aucune relance automatique."],
+  };
+  const STATUT = { ok: "OK", action: "À faire", vigilance: "Vigilance", escalade: "Escalade" };
+  const RECUEIL = { couvert: "recueilli", partiel: "partiel", manquant: "non abordé", a_verifier: "à vérifier" };
+  const INTENTION = { forte: "Intention forte", moyenne: "Intention moyenne", faible: "Intention faible", indeterminee: "Intention indéterminée" };
+
+  /* ---------- Prompts du mode direct (mêmes consignes que debrief/prompts.py) ---------- */
+  const SYSTEME_EXTRACTION = `Tu es Débrief, l'assistant post-appel des conseillers d'un courtier en assurance-vie.
+À partir de la transcription d'un appel entre un conseiller et un client (ou prospect), tu produis une analyse structurée qui sert à : rédiger le compte rendu, préparer la mise à jour du CRM, vérifier le recueil des exigences et besoins (devoir de conseil, DDA) et relever les éléments utiles à la lutte contre le blanchiment (LCB-FT).
+
+Règles impératives
+1. N'invente rien. Tu relèves uniquement ce qui est dit dans l'appel. Une information absente reste vide : statut « manquant », texte "", nombre 0 (ou -1 quand le format le précise), « non_aborde » pour les questions oui/non.
+2. Chaque information porte une source : une citation EXACTE de la transcription, copiée mot pour mot (3 à 25 mots), sans horodatage ni nom du locuteur. Ne modifie aucun mot : un programme vérifie chaque citation et rejette celles qu'il ne retrouve pas.
+3. Distingue ce que dit le client de ce que dit le conseiller. Un souhait du client n'est pas une recommandation du conseiller.
+4. Dates : résous les dates relatives à partir de la date de l'appel. Format AAAA-MM-JJ, ou AAAA-MM-JJTHH:MM si une heure est donnée ou implicite (« ce soir » = 20:00).
+5. Montants en euros, en nombres. Revenus annuels : un montant mensuel est multiplié par 12.
+6. Tu ne rends aucun avis de conformité : tu relèves des faits. Les règles DDA et LCB-FT sont appliquées ensuite par du code.
+7. Profil de risque pressenti : prudent (priorité à la préservation du capital), equilibre (accepte des baisses temporaires, pas tout en actions), dynamique (recherche de performance, accepte de fortes variations), indetermine si l'appel ne permet pas de conclure.
+8. Part d'unités de compte (UC) : pourcentage hors fonds en euros (ETF, actions, SCPI…). Pour une fourchette, prends la borne haute. -1 si non abordé.
+9. Origine des fonds : « floue » si le client reste vague ou refuse de préciser. Tiers payeur : fonds venant d'un compte qui n'est pas au nom du client.
+10. CRM : ne propose que les propriétés pour lesquelles l'appel apporte une information. Valeurs courtes, en français, prêtes à afficher dans une fiche.
+11. Compte rendu : factuel, neutre, sans jugement sur le client.`;
+
+  const ITEM = `{"statut": "couvert|partiel|manquant", "valeur": "…", "source": "citation exacte"}`;
+  const FORMAT_EXTRACTION = `{
+  "compte_rendu": {
+    "resume": "3 à 5 phrases factuelles",
+    "points_cles": [{"texte": "…", "source": "citation exacte"}],
+    "questions_client": [{"question": "…", "reponse": "réponse donnée par le conseiller", "source": "citation exacte"}],
+    "objections": [{"texte": "…", "source": "citation exacte"}],
+    "prochaines_etapes": [{"action": "…", "porteur": "conseiller|client", "echeance": "AAAA-MM-JJ, AAAA-MM-JJTHH:MM ou vide", "type": "appel|email|document|rdv|autre", "source": "citation exacte"}],
+    "intention": "forte|moyenne|faible|indeterminee",
+    "intention_source": "citation exacte"
+  },
+  "recueil": {
+${M.CLES_RECUEIL.map((c) => `    "${c}": ${ITEM}`).join(",\n")}
+  },
+  "projet": {
+    "montant_initial_eur": 0, "montant_source": "",
+    "versement_mensuel_eur": 0, "versement_source": "",
+    "horizon_annees": 0,
+    "profil_pressenti": "prudent|equilibre|dynamique|indetermine", "profil_source": "",
+    "uc_souhaitee_client_pct": -1, "uc_souhaitee_source": "",
+    "uc_recommandee_conseiller_pct": -1, "uc_recommandee_source": "",
+    "mise_en_garde_orale": "oui|non|non_aborde", "mise_en_garde_source": ""
+  },
+  "lcb": {
+    "origine_fonds": "epargne|succession|donation|cession_immobiliere|cession_entreprise|revenus_professionnels|autre|floue|non_abordee",
+    "origine_detail": "", "origine_source": "",
+    "revenus_annuels_eur": 0, "revenus_source": "",
+    "tiers_payeur": "oui|non|non_aborde", "tiers_payeur_source": "",
+    "especes": "oui|non|non_aborde", "especes_source": "",
+    "ppe": "oui|non|non_aborde", "ppe_source": "",
+    "signaux": [{"type": "urgence|reticence|pays_a_risque|montage_complexe|autre", "detail": "…", "source": "citation exacte"}]
+  },
+  "crm": {
+    "champs": [{"propriete": "${Object.keys(M.LIBELLES_CRM).join("|")}", "valeur": "…", "source": "citation exacte"}],
+    "etape_transaction": "appointmentscheduled|qualifiedtobuy|presentationscheduled|decisionmakerboughtin|contractsent|closedwon|closedlost|aucune",
+    "date_cloture_souhaitee": "AAAA-MM-JJ ou vide", "date_cloture_source": ""
+  }
+}`;
+
+  const SYSTEME_RELANCE = `Tu rédiges l'e-mail de relance qu'un conseiller d'un courtier en assurance-vie envoie à son client après un appel.
+Ton : chaleureux, clair et pédagogique, sans jargon. Vouvoiement. Phrases courtes.
+
+Tu écris UNIQUEMENT à partir des faits vérifiés fournis en JSON. N'ajoute aucun chiffre, aucune promesse ni aucune information qui n'y figure pas.
+
+Contraintes de conformité, vérifiées automatiquement après rédaction :
+- Aucune promesse de rendement ni d'absence de risque (« rendement garanti », « sans risque », « vous allez gagner »…).
+- Si tu cites une performance chiffrée, ajoute : « les performances passées ne préjugent pas des performances futures ».
+- Si tu évoques des unités de compte (ETF, actions, SCPI…), précise qu'elles présentent un risque de perte en capital.
+- Ne mentionne jamais d'analyse interne, de contrôle LCB-FT ou de conformité.
+
+Structure : objet court ; salutation ; récapitulatif du projet ; réponses aux questions posées pendant l'appel ; pièces à préparer ; prochaine étape datée ; signature du conseiller. Corps en texte brut, paragraphes séparés par une ligne vide, puces « • ».`;
+
+  const promptExtraction = (appel) => `${SYSTEME_EXTRACTION}
+
+Réponds uniquement avec un objet JSON, sans texte autour, de cette forme exacte (les valeurs séparées par | sont les seules autorisées) :
+${FORMAT_EXTRACTION}
+
+Date de l'appel : ${appel.date_longue} (${appel.date_iso}) à ${appel.heure || "heure inconnue"}
+Conseiller : ${appel.conseiller}
+Client : ${appel.client}
+
+<transcription>
+${M.texteParModele(appel)}
+</transcription>
+
+Produis l'analyse structurée de cet appel.`;
+
+  function promptRelance(faits, historique) {
+    let p = `${SYSTEME_RELANCE}
+
+Faits vérifiés (JSON) :
+${JSON.stringify(faits, null, 2)}
+
+Réponds uniquement avec un objet JSON : {"objet": "…", "corps": "…"}.`;
+    for (const h of historique) {
+      p += `
+
+Ta version précédente :
+${JSON.stringify(h.relance)}
+Elle ne respecte pas ces contrôles :
+${h.echecs.map((e) => "- " + e).join("\n")}
+Corrige-la en conservant tout le reste.`;
+    }
+    return p;
+  }
+
+  const MODELE_LIVE = `# Date : 2026-10-23 11:20
+# Conseiller : Sarah Lemoine
+# Client : Thomas Garnier
+[00:00] Sarah Lemoine : Bonjour Monsieur Garnier, Sarah Lemoine de Basalt. Vous souhaitiez parler d'un versement complémentaire ?
+[00:07] Thomas Garnier : Oui, j'ai touché une prime de 12 000 euros et je voudrais la placer sur mon contrat.
+[00:14] Sarah Lemoine : Très bien. Votre objectif reste la préparation de votre retraite ?
+[00:19] Thomas Garnier : Oui, je pars dans une quinzaine d'années. Et je voudrais être plus dynamique, peut-être 80 % en ETF.
+[00:28] Sarah Lemoine : Vous acceptez des variations importantes sur cette partie ?
+[00:32] Thomas Garnier : Oui, une baisse de 25 % ne me ferait pas paniquer, je ne toucherai pas à cet argent.
+[00:40] Sarah Lemoine : Je vous envoie une proposition demain, avec les risques de perte en capital liés aux ETF.
+[00:47] Thomas Garnier : Parfait, merci.`;
+
+  /* ---------- État ---------- */
+  const VOTRE = "votre_appel";
+  const etat = { id: D.scenarios[0].id, onglet: "cr", rejeu: {}, live: {}, vue: {}, anim: 0, ctl: null, sample: null,
+    valide: {}, requetes: {}, edition: true, saisie: MODELE_LIVE, ongletAvant: null, enCours: false };
+
+  for (const sc of D.scenarios) {
+    sc.appel = M.parserAppel(sc.transcription, sc.id);
+    const r = M.rejouer(sc.appel, sc.extraction, sc.relances, sc.crm_avant);
+    r.mode = "rejeu";
+    r.usages = sc.usages;
+    r.crm_avant = sc.crm_avant;
+    etat.rejeu[sc.id] = r;
+  }
+  const coutMoyen = D.scenarios.reduce((s, sc) => s + sc.usages.reduce((a, u) => a + u.cout_usd, 0), 0) / D.scenarios.length;
+  $("#f-cout").textContent = "≈ " + usd(coutMoyen, 3);
+
+  const scenario = () => D.scenarios.find((s) => s.id === etat.id);
+  function resultat() {
+    if (etat.id === VOTRE) return etat.live[VOTRE] || null;
+    return etat.vue[etat.id] === "live" && etat.live[etat.id] ? etat.live[etat.id] : etat.rejeu[etat.id];
+  }
+
+  /* ---------- Scénarios ---------- */
+  function renderScenarios() {
+    const cartes = D.scenarios.map((sc, i) => `
+      <button type="button" class="scenario" role="tab" data-id="${sc.id}" aria-selected="${etat.id === sc.id}">
+        <span class="sc-num">Appel ${i + 1}</span>
+        <span class="sc-titre">${esc(sc.titre)}</span>
+        <span class="sc-meta">${esc(sc.appel.client)} · ${esc(sc.appel.duree)}</span>
+        <span class="sc-accroche">${esc(sc.accroche)}</span>
+      </button>`);
+    if (etat.sample) {
+      cartes.push(`
+      <button type="button" class="scenario scenario-live" role="tab" data-id="${VOTRE}" aria-selected="${etat.id === VOTRE}">
+        <span class="sc-num">En direct</span>
+        <span class="sc-titre">Votre appel</span>
+        <span class="sc-meta">Analyse par Claude</span>
+        <span class="sc-accroche">Collez une transcription fictive et lancez l'analyse</span>
+      </button>`);
+    }
+    const zone = $("#scenarios");
+    zone.classList.toggle("avec-live", !!etat.sample);
+    zone.innerHTML = cartes.join("");
+  }
+
+  /* ---------- Chaîne de traitement ---------- */
+  const ETAPES = [
+    ["Transcription", "code", "CODE"],
+    ["Extraction", "llm", "LLM"],
+    ["Sources", "code", "CODE"],
+    ["Conformité", "code", "CODE"],
+    ["Relance", "llm", "LLM + CODE"],
+    ["Validation", "humain", "HUMAIN"],
+  ];
+  function renderEtapesStructure() {
+    $("#etapes").innerHTML = ETAPES.map(([nom, type, lib], i) => `
+      <li class="etape" data-etat="attente" id="etape-${i}">
+        <div class="etape-haut"><span class="etape-num">0${i + 1}</span><span class="type type-${type}">${lib}</span></div>
+        <span class="etape-nom">${nom}</span>
+        <span class="etape-detail"></span>
+      </li>`).join("");
+  }
+  function etape(i, statut, detail) {
+    const li = $(`#etape-${i}`);
+    li.dataset.etat = statut;
+    if (detail !== undefined) $(".etape-detail", li).textContent = detail;
+  }
+  function detailsFinaux(r) {
+    const v = r.verification, c = r.conformite;
+    const n = v.introuvables.length;
+    const nbRegles = c.adequation.length + c.lcb.length;
+    let relance;
+    if (r.statut_relance === "suspendue") relance = "suspendue : escalade LCB-FT";
+    else if (r.statut_relance === "prete") relance = r.corrections_relance ? `corrigée ${r.corrections_relance} fois, puis validée` : "rédigée et relue (4 contrôles)";
+    else relance = "à revoir par le conseiller";
+    const valide = etat.valide[cle(r)];
+    return [
+      ["fait", `${r.appel.tours.length} prises de parole · ${r.appel.duree || "durée inconnue"}`],
+      ["fait", r.mode === "live" ? `Claude · ${r.duree_extraction} s · JSON validé` : "sortie enregistrée · schéma imposé"],
+      ["fait", `${v.retrouvees}/${v.total} citations retrouvées${n ? ` · ${n} rejetée${n > 1 ? "s" : ""}` : ""}`],
+      [c.niveau_lcb === "escalade" ? "alerte" : "fait", `${nbRegles} règles évaluées · LCB ${NIVEAU[c.niveau_lcb][0].toLowerCase()}`],
+      [r.statut_relance === "suspendue" ? "alerte" : "fait", relance],
+      [valide ? "fait" : "humain", valide ? "validé (démo : rien n'est envoyé)" : `${r.plan.operations.length} requêtes HubSpot à valider`],
+    ];
+  }
+  function renderEtapesFinales(r) {
+    if (!r) { ETAPES.forEach((_, i) => etape(i, "attente", "")); return; }
+    detailsFinaux(r).forEach(([s, d], i) => etape(i, s, d));
+  }
+  function renderCompteurs(r) {
+    const z = $("#compteurs");
+    if (!r) { z.innerHTML = `<span>En attente d'une transcription</span>`; return; }
+    const usages = r.usages || [];
+    const tokens = usages.reduce((s, u) => s + u.input_tokens + u.output_tokens, 0);
+    const cout = usages.reduce((s, u) => s + u.cout_usd, 0);
+    const appelsModele = usages.length;
+    z.innerHTML = [
+      `<span>Coût API estimé <b>${usd(cout)}</b></span>`,
+      `<span><b>${nf.format(tokens)}</b> tokens</span>`,
+      `<span><b>${appelsModele}</b> appel${appelsModele > 1 ? "s" : ""} au modèle</span>`,
+      `<span>Politique <b>v${M.POLITIQUE.version}</b></span>`,
+      r.mode === "live" ? `<span>Durée réelle <b>${r.duree_totale} s</b></span>` : `<span>Sorties enregistrées, règles recalculées ici</span>`,
+    ].join("");
+  }
+  function renderMode() {
+    const m = $("#mode");
+    const r = resultat();
+    const live = r && r.mode === "live";
+    m.dataset.mode = live ? "live" : "rejeu";
+    if (etat.enCours) { m.textContent = "Analyse en direct par Claude…"; m.dataset.mode = "live"; return; }
+    if (etat.id === VOTRE) { m.textContent = r ? "Analyse en direct par Claude, sur votre compte" : "Collez une transcription, puis lancez l'analyse"; return; }
+    if (live) {
+      m.innerHTML = `Analyse en direct par Claude · <button type="button" class="btn-lien" data-action="vue-rejeu">voir l'analyse enregistrée</button>`;
+    } else if (etat.live[etat.id]) {
+      m.innerHTML = `Analyse enregistrée · <button type="button" class="btn-lien" data-action="vue-live">voir l'analyse en direct</button>`;
+    } else {
+      m.textContent = "Analyse enregistrée, rejouée dans votre navigateur";
+    }
+  }
+  function renderBoutons() {
+    const enCours = etat.enCours;
+    $("#btn-rejouer").hidden = etat.id === VOTRE;
+    $("#btn-rejouer").disabled = enCours;
+    $("#btn-live").hidden = !etat.sample || etat.id === VOTRE;
+    $("#btn-live").disabled = enCours;
+    $("#btn-stop").hidden = !enCours;
+  }
+  function message(texte, erreur) {
+    const m = $("#message");
+    m.hidden = !texte;
+    m.textContent = texte || "";
+    m.classList.toggle("erreur", !!erreur);
+  }
+
+  /* ---------- Procès-verbal ---------- */
+  function renderPV() {
+    const pv = $("#pv");
+    if (etat.id === VOTRE && (etat.edition || !etat.live[VOTRE])) {
+      pv.innerHTML = `
+        <div class="pv-tete"><div class="pv-titre">Votre transcription <span>analyse en direct</span></div></div>
+        <div class="saisie">
+          <label for="saisie-texte">Une ligne par prise de parole</label>
+          <p class="aide">Format « [mm:ss] Nom : texte ». En-têtes facultatifs : « # Conseiller : … », « # Client : … », « # Date : AAAA-MM-JJ HH:MM ». Utilisez un appel fictif : n'y mettez aucune donnée réelle de client.</p>
+          <textarea id="saisie-texte" spellcheck="false">${esc(etat.saisie)}</textarea>
+          <div class="saisie-actions">
+            <button type="button" class="btn btn-live" data-action="analyser-saisie" ${etat.enCours ? "disabled" : ""}>Analyser avec Claude</button>
+            <span>L'analyse utilise votre compte Claude ; une autorisation vous est demandée la première fois.</span>
+          </div>
+        </div>`;
+      $("#c-appel").textContent = "";
+      return;
+    }
+    const r = resultat();
+    const appel = r ? r.appel : scenario().appel;
+    pv.innerHTML = `
+      <div class="pv-tete">
+        <div class="pv-titre">Procès-verbal de l'appel <span>${appel.tours.length} lignes</span></div>
+        <div class="pv-meta">${esc(appel.date_longue)}${appel.heure ? ", " + esc(appel.heure) : ""} · ${esc(appel.duree)}</div>
+        <div class="pv-meta">${esc(appel.conseiller)} (conseiller) avec ${esc(appel.client)}</div>
+        ${etat.id === VOTRE ? `<div><button type="button" class="btn-lien" data-action="modifier">Modifier la transcription</button></div>` : ""}
+      </div>
+      <div class="pv-corps" id="pv-corps">
+        <ol class="pv-lignes">${appel.tours.map((t) => `
+          <li class="pv-ligne role-${t.role}" id="l-${t.numero}">
+            <span class="pv-num">${t.numero}</span><span class="pv-heure">${esc(t.horodatage)}</span>
+            <div><span class="pv-loc">${esc(t.locuteur)}</span><p class="pv-texte">${esc(t.texte)}</p></div>
+          </li>`).join("")}
+        </ol>
+      </div>`;
+    $("#c-appel").textContent = appel.tours.length;
+  }
+
+  function surligner(ligne, citation) {
+    $$(".pv-ligne.surligne").forEach((li) => {
+      li.classList.remove("surligne");
+      const p = $(".pv-texte", li);
+      p.textContent = p.textContent;
+    });
+    const li = $(`#l-${ligne}`);
+    if (!li) return null;
+    li.classList.add("surligne");
+    const p = $(".pv-texte", li);
+    const texte = p.textContent;
+    const motif = citation.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "[\\s\\u00a0\\u202f]+").replace(/['’]/g, "['’]");
+    let m = null;
+    try { m = new RegExp(motif, "i").exec(texte); } catch (e) { m = null; }
+    if (m) p.innerHTML = esc(texte.slice(0, m.index)) + "<mark>" + esc(m[0]) + "</mark>" + esc(texte.slice(m.index + m[0].length));
+    return li;
+  }
+  function montrerLigne(ligne, citation) {
+    if (etroit()) {
+      if (etat.onglet !== "appel") etat.ongletAvant = etat.onglet;
+      choisirOnglet("appel");
+      const li = surligner(ligne, citation);
+      if (li) li.scrollIntoView({ block: "center", behavior: reduit() ? "auto" : "smooth" });
+      $("#retour").hidden = !etat.ongletAvant;
+    } else {
+      const li = surligner(ligne, citation);
+      const corps = $("#pv-corps");
+      if (li && corps) corps.scrollTo({ top: li.offsetTop - corps.clientHeight / 2 + li.clientHeight / 2, behavior: reduit() ? "auto" : "smooth" });
+    }
+  }
+
+  /* ---------- Onglets ---------- */
+  function choisirOnglet(o) {
+    etat.onglet = o;
+    $("#atelier").dataset.onglet = o;
+    $$(".onglet").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.onglet === o)));
+    if (o !== "appel") { $("#retour").hidden = true; renderPanneau(); }
+  }
+  function renderComptes(r) {
+    const crm = $("#c-crm"), conf = $("#c-conf"), rel = $("#c-relance");
+    [crm, conf, rel].forEach((e) => { e.textContent = ""; e.className = "compte"; e.hidden = true; });
+    if (!r) return;
+    const n = r.plan.diff.filter((l) => l.statut === "ecrire").length + r.plan.cycle.length;
+    crm.textContent = n; crm.hidden = false;
+    const nv = r.conformite.niveau_lcb;
+    const vig = r.conformite.adequation.concat(r.conformite.lcb).filter((x) => x.statut === "vigilance").length;
+    if (nv === "escalade") { conf.textContent = "escalade"; conf.classList.add("st-escalade"); }
+    else if (vig) { conf.textContent = `${vig} vigilance${vig > 1 ? "s" : ""}`; conf.classList.add("st-vigilance"); }
+    else { conf.textContent = "OK"; conf.classList.add("st-ok"); }
+    conf.hidden = false;
+    if (r.statut_relance === "suspendue") { rel.textContent = "suspendue"; rel.classList.add("st-escalade"); }
+    else if (r.statut_relance === "prete") { rel.textContent = "prête"; rel.classList.add("st-ok"); }
+    else { rel.textContent = "à revoir"; rel.classList.add("st-vigilance"); }
+    rel.hidden = false;
+  }
+
+  /* ---------- Panneaux ---------- */
+  function cite(r, chemin) {
+    const q = r.verification.citations[chemin];
+    if (!q) return "";
+    const c = r.verification.get(chemin);
+    if (c.statut === "introuvable") return `<span class="cite cite-ko" title="Citation introuvable dans l'appel : « ${esc(q)} »">introuvable</span>`;
+    if (c.statut === "vide") return "";
+    return `<button type="button" class="cite${c.statut === "approchee" ? " cite-approx" : ""}" data-ligne="${c.ligne}" data-q="${esc(q)}" title="« ${esc(q)} »${c.statut === "approchee" ? " (citation approchée)" : ""}" aria-label="Voir la ligne ${c.ligne} de l'appel">l. ${c.ligne}</button>`;
+  }
+  const pill = (statut, texte) => `<span class="pill st-${statut}">${esc(texte || STATUT[statut] || statut)}</span>`;
+
+  function panneauCR(r) {
+    const cr = r.analyse.compte_rendu, a = r.appel;
+    const etapes = cr.prochaines_etapes.map((e, i) => `
+      <li><time>${esc(fmtDate(e.echeance))}</time>
+        <div><span class="quoi">${esc(e.action)}</span>${cite(r, `compte_rendu.prochaines_etapes[${i}]`)}<span class="qui">${e.porteur === "conseiller" ? "Conseiller" : "Client"}</span></div></li>`).join("");
+    return `
+      <div class="tete-doc">
+        <div><p class="sur">Compte rendu · ${esc(a.date_longue)}</p><h3>${esc(a.client)}</h3>
+          <p class="meta-doc">Avec ${esc(a.conseiller)} · ${esc(a.duree)} · ${a.tours.length} prises de parole</p></div>
+        <span>${pill(cr.intention === "forte" ? "ok" : cr.intention === "faible" ? "vigilance" : "action", INTENTION[cr.intention])}${cite(r, "compte_rendu.intention")}</span>
+      </div>
+      <p class="resume">${esc(cr.resume)}</p>
+      ${cr.points_cles.length ? `<h4>Points clés</h4><ul class="liste">${cr.points_cles.map((p, i) => `<li>${esc(p.texte)}${cite(r, `compte_rendu.points_cles[${i}]`)}</li>`).join("")}</ul>` : ""}
+      ${cr.questions_client.length ? `<h4>Questions du client</h4><dl class="qa">${cr.questions_client.map((q, i) => `<div><dt>${esc(q.question)}${cite(r, `compte_rendu.questions_client[${i}]`)}</dt><dd>${esc(q.reponse)}</dd></div>`).join("")}</dl>` : ""}
+      ${cr.objections.length ? `<h4>Objections et freins</h4><ul class="liste">${cr.objections.map((o, i) => `<li>${esc(o.texte)}${cite(r, `compte_rendu.objections[${i}]`)}</li>`).join("")}</ul>` : ""}
+      ${etapes ? `<h4>Prochaines étapes</h4><ol class="frise">${etapes}</ol>` : ""}`;
+  }
+
+  function valeurCRM(propriete, v) {
+    if (!v) return "—";
+    if (propriete === "montant_envisage" && /^\d+(\.\d+)?$/.test(v)) return eur(+v);
+    if (propriete === "lifecyclestage") return M.LIBELLES_CYCLE[v] || v;
+    if (propriete === "hs_lead_status") return M.LIBELLES_STATUT_LEAD[v] || v;
+    return v;
+  }
+
+  function panneauCRM(r) {
+    const p = r.plan, avant = r.crm_avant || {};
+    const ecrire = p.diff.filter((l) => l.statut === "ecrire").length;
+    const bloques = p.diff.filter((l) => l.statut === "bloque").length;
+    const retenus = p.diff.filter((l) => l.statut === "retenu").length;
+    const k = cle(r);
+    const lignes = p.diff.map((l) => `
+      <div class="diff-ligne ${l.statut}">
+        <span class="diff-prop">${esc(l.libelle)}<code>${esc(l.propriete)}</code></span>
+        <span class="diff-avant${l.avant && l.statut === "ecrire" ? " remplace" : ""}">${esc(valeurCRM(l.propriete, l.avant))}</span>
+        <span class="diff-apres">${esc(valeurCRM(l.propriete, l.apres))}</span>
+        <span class="diff-src">${cite(r, l.source_chemin)}</span>
+        ${l.raison ? `<span class="diff-raison">${l.statut === "ecrire" ? "↻ " : l.statut === "inchange" ? "" : "✕ "}${esc(l.raison)}</span>` : ""}
+      </div>`).join("");
+    const cycle = p.cycle.map((l) => `<div><dt>${esc(l.libelle)}</dt><dd>${esc(valeurCRM(l.propriete, l.avant))} → ${esc(valeurCRM(l.propriete, l.apres))}</dd></div>`).join("");
+    const t = p.transaction;
+    const transaction = t ? `
+      <dl class="paires">
+        <div><dt>Nom</dt><dd>${esc(t.dealname)}</dd></div>
+        <div><dt>Montant</dt><dd>${t.amount ? esc(eur(+t.amount)) : "—"}</dd></div>
+        <div><dt>Étape</dt><dd>${esc(M.ETAPES_TRANSACTION[t.dealstage] || t.dealstage)}<code>${esc(t.dealstage)}</code></dd></div>
+        <div><dt>Clôture visée</dt><dd>${t.closedate ? esc(fmtDate(t.closedate.slice(0, 10))) + cite(r, "crm.date_cloture") : "—"}</dd></div>
+      </dl>` : `<p class="paires" style="margin:0;font-size:var(--t-s);color:var(--encre-2)">${r.conformite.niveau_lcb === "escalade" ? "Aucune transaction : le dossier attend la décision de la conformité." : "Aucune transaction ouverte après cet appel."}</p>`;
+    const ORIGINE = { appel: "Convenu pendant l'appel", recueil: "Recueil DDA", adequation: "Adéquation", lcb: "LCB-FT" };
+    const taches = p.taches.map((x) => `
+      <li class="tache">
+        <time>${esc(fmtDate(x.echeance))}</time>
+        <span class="tache-sujet">${esc(x.sujet)}${x.source_chemin ? cite(r, x.source_chemin) : ""}</span>
+        <span class="tache-tags">${pill(x.assignee === "conformite" ? "escalade" : "action", x.assignee === "conformite" ? "Responsable LCB-FT" : "Conseiller")}<span class="pill">${esc(x.type)}</span><span class="pill">${esc(ORIGINE[x.origine] || x.origine)}</span></span>
+        ${x.origine !== "appel" ? `<p class="tache-corps">${esc(x.corps)}</p>` : ""}
+      </li>`).join("");
+    const requetes = p.operations.map((o) => `
+      <details><summary><span class="methode">${esc(o.methode)}</span><code>${esc(o.chemin)}</code><span>${esc(o.description)}</span></summary>
+      <pre>${esc(JSON.stringify(o.corps, null, 2))}</pre></details>`).join("");
+    const nom = [avant.firstname, avant.lastname].filter(Boolean).join(" ") || r.appel.client;
+    return `
+      <div class="tete-doc"><div><p class="sur">Mise à jour proposée · rien n'est encore écrit</p><h3>HubSpot</h3></div></div>
+      <ul class="chiffres">
+        <li><b>${ecrire}</b> propriété${ecrire > 1 ? "s" : ""} à écrire</li>
+        ${bloques ? `<li class="st-escalade"><b>${bloques}</b> bloquée${bloques > 1 ? "s" : ""} (sans source)</li>` : ""}
+        ${retenus ? `<li class="st-escalade"><b>${retenus}</b> retenue${retenus > 1 ? "s" : ""} (LCB-FT)</li>` : ""}
+        <li><b>${t ? 1 : 0}</b> transaction</li>
+        <li><b>${p.taches.length}</b> tâche${p.taches.length > 1 ? "s" : ""}</li>
+        <li><b>1</b> note</li>
+      </ul>
+      <h4>Fiche contact <small>diff avant / après</small></h4>
+      <div class="bloc">
+        <div class="bloc-tete"><b>${esc(nom)}</b><span>contact ${esc(p.contact_id)}${avant.email ? " · " + esc(avant.email) : ""}</span></div>
+        <div class="diff-ligne diff-entete" aria-hidden="true"><span>Propriété</span><span>Avant</span><span>Après</span><span style="text-align:right">Source</span></div>
+        ${lignes || `<p class="paires" style="margin:0">Aucune propriété proposée.</p>`}
+      </div>
+      <div class="deux-col" style="margin-top:12px">
+        <div class="bloc"><div class="bloc-tete"><b>Cycle de vie</b><span>décidé par le code</span></div>${cycle ? `<dl class="paires">${cycle}</dl>` : `<p class="paires" style="margin:0;font-size:var(--t-s);color:var(--encre-2)">Inchangé.</p>`}</div>
+        <div class="bloc"><div class="bloc-tete"><b>Transaction</b><span>pipeline par défaut</span></div>${transaction}</div>
+      </div>
+      <h4>Tâches <small>échéances en heure de Paris</small></h4>
+      <ul class="taches">${taches}</ul>
+      <h4>Note de compte rendu</h4>
+      <div class="bloc"><div class="note-crm">${p.note_html}</div></div>
+      <div class="valider">
+        <p>${etat.valide[k] ? "" : "Le conseiller relit, corrige si besoin, puis valide. Seules les lignes vérifiées partent vers HubSpot."}</p>
+        <button type="button" class="btn btn-plein" data-action="valider" ${etat.valide[k] ? "disabled" : ""}>${etat.valide[k] ? "Validé" : "Valider et envoyer vers HubSpot"}</button>
+        <button type="button" class="btn" data-action="requetes" aria-expanded="${!!etat.requetes[k]}">${etat.requetes[k] ? "Masquer" : "Voir"} les ${p.operations.length} requêtes API</button>
+      </div>
+      ${etat.valide[k] ? `<p class="confirmation" role="status">Validé. Dans cette démo, rien n'est envoyé ; en production, ces ${p.operations.length} requêtes partent vers l'API HubSpot (CRM v3), dans cet ordre.</p>` : ""}
+      ${etat.requetes[k] ? `<div class="requetes">${requetes}</div>` : ""}`;
+  }
+
+  function regles(r, liste) {
+    return `<ul class="regles">${liste.map((x) => `
+      <li class="regle"><span class="regle-id">${esc(x.id)}</span>
+        <div><p class="regle-titre">${esc(x.titre)} ${pill(x.statut)}</p>
+          <p class="regle-detail">${esc(x.detail)}</p>
+          ${x.action ? `<p class="regle-action">→ ${esc(x.action)}</p>` : ""}
+          <p class="regle-ref">${esc(x.reference)}${x.sources.map((s) => cite(r, s)).join("")}</p></div></li>`).join("")}</ul>`;
+  }
+
+  function panneauConf(r) {
+    const c = r.conformite;
+    const [titre, expli] = NIVEAU[c.niveau_lcb];
+    const recueil = c.recueil.map((l) => `
+      <li class="st-${l.statut}"><span class="pastille" aria-hidden="true"></span>
+        <span class="rec-lib">${esc(l.libelle)} <small>${RECUEIL[l.statut]}${l.requis ? "" : " · facultatif"}</small>${cite(r, `recueil.${l.cle}`)}</span>
+        <span class="rec-val">${esc(l.valeur || "—")}</span></li>`).join("");
+    const pieces = c.pieces.map((x) => `<li><span>${esc(x)}</span>${c.pieces_obligatoires.includes(x) ? pill("action", "obligatoire") : ""}</li>`).join("");
+    const pct = Math.round((100 * c.nb_requis_couverts) / c.nb_requis);
+    return `
+      <div class="tete-doc"><div><p class="sur">Règles déterministes · politique v${esc(c.politique)}</p><h3>Conformité</h3></div></div>
+      <div class="synthese" style="margin-top:14px">
+        <div class="tuile"><span class="tuile-titre">Devoir de conseil (DDA)</span><strong>${c.nb_requis_couverts}/${c.nb_requis} rubriques</strong><div class="jauge"><i style="width:${pct}%"></i></div><p>${c.recueil_complet ? "Recueil complet et sourcé." : `${c.nb_requis - c.nb_requis_couverts} à compléter avant toute recommandation écrite.`}</p></div>
+        <div class="tuile niveau-${c.niveau_lcb}"><span class="tuile-titre">LCB-FT</span><strong>${titre}</strong><p>${expli}</p></div>
+      </div>
+      ${c.niveau_lcb === "escalade" ? `
+      <div class="bandeau" role="note"><strong>Ce que fait Débrief en cas d'escalade</strong>
+        <ul>
+          <li>Aucun e-mail automatique au client : rien ne doit lui laisser deviner qu'une analyse est en cours (art. L561-18 CMF).</li>
+          <li>Une seule tâche, assignée au responsable LCB-FT, avec le détail des règles déclenchées.</li>
+          <li>L'origine des fonds n'est pas écrite dans le CRM : elle part au canal conformité.</li>
+          <li>Pas de transaction ni de changement de statut avant décision.</li>
+        </ul></div>` : ""}
+      <h4>Recueil des exigences et besoins</h4>
+      <ul class="recueil">${recueil}</ul>
+      ${c.questions.length ? `
+      <div class="questions">
+        <div class="questions-tete"><strong>À poser au prochain échange</strong><button type="button" class="btn" data-action="copier-questions">Copier les questions</button></div>
+        <ol id="liste-questions">${c.questions.map((q) => `<li>${esc(q)}</li>`).join("")}</ol>
+      </div>` : ""}
+      <h4>Adéquation <small>${c.adequation.length} règles</small></h4>
+      ${regles(r, c.adequation)}
+      <h4>LCB-FT <small>${c.lcb.length} règles</small></h4>
+      ${regles(r, c.lcb)}
+      <h4>Pièces à demander</h4>
+      <ul class="pieces">${pieces}</ul>
+      <p class="note-politique">Seuils paramétrables (config.py) : justificatif dès ${eur(M.POLITIQUE.seuil_justificatif_eur)}, plafond d'UC par profil ${M.POLITIQUE.uc_max_par_profil.prudent} / ${M.POLITIQUE.uc_max_par_profil.equilibre} / ${M.POLITIQUE.uc_max_par_profil.dynamique} %. Références indicatives, à valider avec la conformité.</p>`;
+  }
+
+  function corpsMail(texte) {
+    return texte.split(/\n\s*\n/).map((bloc) => {
+      const lignes = bloc.split("\n").map((l) => l.trim()).filter(Boolean);
+      if (!lignes.length) return "";
+      const puces = lignes.filter((l) => l.startsWith("•"));
+      if (puces.length && puces.length === lignes.length - 1 && !lignes[0].startsWith("•")) {
+        return `<p><span class="intertitre">${esc(lignes[0])}</span></p><ul>${puces.map((l) => `<li>${esc(l.replace(/^•\s*/, ""))}</li>`).join("")}</ul>`;
+      }
+      if (puces.length === lignes.length) return `<ul>${puces.map((l) => `<li>${esc(l.replace(/^•\s*/, ""))}</li>`).join("")}</ul>`;
+      if (lignes.length > 1 && lignes[0].length < 48 && !/[.,:;!?]$/.test(lignes[0])) {
+        return `<p><span class="intertitre">${esc(lignes[0])}</span>${esc(lignes.slice(1).join(" "))}</p>`;
+      }
+      return `<p>${lignes.map(esc).join("<br>")}</p>`;
+    }).join("");
+  }
+
+  function panneauRelance(r) {
+    if (r.statut_relance === "suspendue") {
+      return `
+        <div class="tete-doc"><div><p class="sur">E-mail au client</p><h3>Relance suspendue</h3></div>${pill("escalade", "LCB-FT")}</div>
+        <div class="bandeau" role="note"><strong>Aucun message automatique n'est préparé pour ce client.</strong>
+          <ul>
+            <li>Le dossier est en escalade LCB-FT : le responsable décide de la suite, y compris d'une éventuelle déclaration.</li>
+            <li>Toute communication doit rester neutre et ne rien laisser deviner de l'analyse (art. L561-18 CMF) : elle se fait à la main, après validation.</li>
+            <li>Le modèle n'est même pas appelé pour rédiger : un appel en moins, un risque en moins.</li>
+          </ul></div>`;
+    }
+    const rel = r.relance;
+    const a = r.crm_avant || {};
+    const controles = r.controles_relance.map((x) => `
+      <li class="st-${x.statut}"><span class="ico">${x.statut === "ok" ? "✓" : x.statut === "ko" ? "✕" : "·"}</span><code>${esc(x.id)}</code><span>${esc(x.titre)}</span><small>${esc(x.message)}</small></li>`).join("");
+    const refus = (r.brouillons || []).slice(0, -1).map((b, i) => `
+      <details class="refus"><summary>Version ${i + 1} refusée par la relecture : <b>${esc(b.controles.filter((x) => x.statut === "ko").map((x) => x.id).join(", "))}</b> · ${esc(b.controles.filter((x) => x.statut === "ko").map((x) => x.message).join(" "))}</summary>
+        <div class="mail-corps">${corpsMail(b.relance.corps)}</div></details>`).join("");
+    return `
+      <div class="tete-doc"><div><p class="sur">Brouillon rédigé à partir des seuls faits vérifiés</p><h3>Relance</h3></div>${pill(r.statut_relance === "prete" ? "ok" : "vigilance", r.statut_relance === "prete" ? "Prête à relire" : "À revoir")}</div>
+      <div class="mail" style="margin-top:14px">
+        <dl class="mail-tete" style="margin:0">
+          <div><dt>À</dt><dd>${esc(a.email || r.appel.client)}</dd></div>
+          <div><dt>De</dt><dd>${esc(r.appel.conseiller)}</dd></div>
+          <div><dt>Objet</dt><dd><b>${esc(rel.objet)}</b></dd></div>
+        </dl>
+        <div class="mail-corps" id="mail-corps">${corpsMail(rel.corps)}</div>
+      </div>
+      <div class="actions"><button type="button" class="btn btn-plein" data-action="copier-mail">Copier l'e-mail</button><span id="copie-etat" role="status"></span></div>
+      <h4>Relu avant envoi <small>4 contrôles déterministes</small></h4>
+      <ul class="controles">${controles}</ul>
+      ${refus}`;
+  }
+
+  function renderPanneau() {
+    const p = $("#panneau");
+    const r = resultat();
+    if (!r) {
+      p.innerHTML = `<div class="vide"><strong>Le résultat s'affichera ici</strong><p>Compte rendu, mise à jour HubSpot, contrôles DDA et LCB-FT, brouillon de relance : collez une transcription puis lancez l'analyse.</p></div>`;
+      return;
+    }
+    const f = { cr: panneauCR, crm: panneauCRM, conf: panneauConf, relance: panneauRelance }[etat.onglet] || panneauCR;
+    p.innerHTML = f(r);
+  }
+
+  function cle(r) { return (r.mode || "rejeu") + ":" + (r.appel ? r.appel.identifiant : etat.id); }
+
+  function renderTout() {
+    const r = resultat();
+    renderScenarios();
+    renderMode();
+    renderBoutons();
+    renderPV();
+    renderEtapesFinales(r);
+    renderCompteurs(r);
+    renderComptes(r);
+    if (etat.onglet === "appel" && !etroit()) etat.onglet = "cr";
+    choisirOnglet(etat.onglet);
+  }
+
+  /* ---------- Rejeu animé ---------- */
+  function compter(el, fin, ms, format) {
+    if (reduit() || ms <= 0) { el.textContent = format(fin); return; }
+    const debut = performance.now();
+    const pas = (t) => {
+      const k = Math.min(1, (t - debut) / ms);
+      el.textContent = format(Math.round(fin * k));
+      if (k < 1) requestAnimationFrame(pas);
+    };
+    requestAnimationFrame(pas);
+  }
+  async function rejouerAnim() {
+    const jeton = ++etat.anim;
+    const r = etat.rejeu[etat.id];
+    if (!r) return;
+    etat.vue[etat.id] = "rejeu";
+    etat.valide[cle(r)] = false;
+    renderMode();
+    message("");
+    const finaux = detailsFinaux(r);
+    const vite = reduit();
+    const d = (ms) => (vite ? 0 : ms);
+    $("#panneau").setAttribute("aria-busy", "true");
+    ETAPES.forEach((_, i) => etape(i, "attente", ""));
+    const ok = () => jeton === etat.anim;
+
+    etape(0, "encours", "lecture des tours de parole…");
+    await attendre(d(450)); if (!ok()) return;
+    etape(0, ...finaux[0]);
+
+    const u = (r.usages || [])[0] || { output_tokens: 3000 };
+    etape(1, "encours", "");
+    compter($("#etape-1 .etape-detail"), u.output_tokens, d(1500), (n) => `rejeu de l'extraction… ${nf.format(n)} tokens`);
+    await attendre(d(1650)); if (!ok()) return;
+    etape(1, ...finaux[1]);
+
+    etape(2, "encours", "");
+    compter($("#etape-2 .etape-detail"), r.verification.total, d(800), (n) => `recherche des citations… ${n}/${r.verification.total}`);
+    await attendre(d(900)); if (!ok()) return;
+    etape(2, ...finaux[2]);
+
+    etape(3, "encours", "12 règles DDA et LCB-FT…");
+    await attendre(d(650)); if (!ok()) return;
+    etape(3, ...finaux[3]);
+
+    if (r.statut_relance === "suspendue") {
+      etape(4, "encours", "vérification du niveau LCB-FT…");
+      await attendre(d(500)); if (!ok()) return;
+    } else {
+      etape(4, "encours", "rédaction à partir des faits vérifiés…");
+      await attendre(d(800)); if (!ok()) return;
+      if (r.corrections_relance) {
+        const ko = r.brouillons[0].controles.filter((x) => x.statut === "ko").map((x) => x.id).join(", ");
+        etape(4, "encours", `relecture : ${ko} ✕ → nouvelle version…`);
+        await attendre(d(1100)); if (!ok()) return;
+      }
+    }
+    etape(4, ...finaux[4]);
+    etape(5, "encours", "préparation du diff et des requêtes…");
+    await attendre(d(450)); if (!ok()) return;
+    etape(5, ...finaux[5]);
+    $("#panneau").removeAttribute("aria-busy");
+    renderTout();
+  }
+
+  /* ---------- Analyse en direct ---------- */
+  const ERREURS = {
+    not_granted: "L'analyse en direct n'a pas été autorisée pour cette page.",
+    sampling_disabled: "Claude n'est pas disponible pour ce compte.",
+    rate_limited: "Limite d'utilisation atteinte. Réessayez dans quelques minutes.",
+    prompt_too_large: "Transcription trop longue pour une analyse en direct : raccourcissez-la.",
+    invalid_json: "La réponse de Claude n'a pas pu être lue. Relancez l'analyse.",
+    refused: "Claude a décliné cette demande. Vérifiez le contenu de la transcription.",
+    empty_completion: "Claude n'a rien renvoyé. Relancez l'analyse.",
+    session_expired: "Votre session a expiré : reconnectez-vous à Claude, puis relancez.",
+    cancelled: "Analyse arrêtée.",
+  };
+  const DEFINITIF = ["not_granted", "sampling_disabled", "not_declared", "capability_disabled", "capability_removed"];
+
+  function aujourdhui() {
+    const p = {};
+    for (const x of new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Paris", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(new Date())) p[x.type] = x.value;
+    return { date: `${p.year}-${p.month}-${p.day}`, heure: `${p.hour}:${p.minute}` };
+  }
+
+  async function lancerLive(id, texte) {
+    if (!etat.sample || etat.enCours) return;
+    const appel = M.parserAppel(texte, id);
+    if (appel.tours.length < 2) { message("Format non reconnu : écrivez une prise de parole par ligne, sous la forme « Nom : texte ».", true); return; }
+    if (!appel.date_iso) { const t = aujourdhui(); appel.date_iso = t.date; appel.heure = appel.heure || t.heure; appel.date_longue = M.dateLongue(t.date); }
+    const crmAvant = id === VOTRE ? {} : scenario().crm_avant;
+    const jeton = ++etat.anim;
+    etat.enCours = true;
+    etat.ctl = new AbortController();
+    const signal = etat.ctl.signal;
+    message("");
+    renderMode(); renderBoutons();
+    ETAPES.forEach((_, i) => etape(i, "attente", ""));
+    etape(0, "fait", `${appel.tours.length} prises de parole · ${appel.duree || "durée inconnue"}`);
+    const debut = performance.now();
+    const secondes = () => Math.round((performance.now() - debut) / 1000);
+    let ecrit = false;
+    const minuterie = setInterval(() => { if (!ecrit) etape(1, "encours", `Claude réfléchit… ${secondes()} s`); }, 1000);
+    etape(1, "encours", "Claude réfléchit…");
+    const con = $("#console");
+    con.hidden = false; con.textContent = "";
+    const usages = [];
+    try {
+      const entree = promptExtraction(appel);
+      let sortie = "";
+      const brut = await etat.sample.json(entree, {
+        signal,
+        onText: ({ text }) => { ecrit = true; sortie = text; con.textContent = text.slice(-900); etape(1, "encours", `Claude écrit… ${nf.format(text.length)} caractères`); },
+      });
+      clearInterval(minuterie);
+      const dureeExtraction = secondes();
+      const e1 = M.estimerCout("claude-sonnet-5-5", entree.length, sortie.length || JSON.stringify(brut).length);
+      usages.push({ etape: "extraction", input_tokens: e1.entree, output_tokens: e1.sortie, cout_usd: e1.usd });
+      etape(1, "fait", `Claude · ${dureeExtraction} s · JSON validé`);
+      con.hidden = true;
+
+      const analyse = M.conformerAnalyse(brut);
+      const verification = M.verifier(analyse, appel.tours);
+      const conformite = M.evaluer(analyse, verification);
+      const r = { mode: "live", appel, analyse, verification, conformite, crm_avant: crmAvant, duree_extraction: dureeExtraction,
+        relance: null, statut_relance: "suspendue", controles_relance: [], corrections_relance: 0, brouillons: [], usages };
+      const n = verification.introuvables.length;
+      etape(2, "fait", `${verification.retrouvees}/${verification.total} citations retrouvées${n ? ` · ${n} rejetée${n > 1 ? "s" : ""}` : ""}`);
+      etape(3, conformite.niveau_lcb === "escalade" ? "alerte" : "fait", `${conformite.adequation.length + conformite.lcb.length} règles évaluées · LCB ${NIVEAU[conformite.niveau_lcb][0].toLowerCase()}`);
+
+      if (conformite.niveau_lcb !== "escalade") {
+        etape(4, "encours", "Claude rédige la relance…");
+        const faits = M.faitsVerifies(appel, analyse, verification, conformite);
+        const historique = [];
+        r.statut_relance = "a_revoir";
+        for (let t = 0; t <= 1; t++) {
+          const entreeRelance = promptRelance(faits, historique);
+          const brutRelance = await etat.sample.json(entreeRelance, { signal, modelTier: "quick" });
+          const relance = { objet: String((brutRelance && brutRelance.objet) || "Suite à notre échange"), corps: String((brutRelance && brutRelance.corps) || "") };
+          const e2 = M.estimerCout("claude-haiku-5-5", entreeRelance.length, JSON.stringify(relance).length);
+          usages.push({ etape: "relance", input_tokens: e2.entree, output_tokens: e2.sortie, cout_usd: e2.usd });
+          const controles = M.verifierRelance(`${relance.objet}\n${relance.corps}`);
+          r.brouillons.push({ relance, controles });
+          r.relance = relance; r.controles_relance = controles; r.corrections_relance = t;
+          const echecs = controles.filter((x) => x.statut === "ko").map((x) => x.message);
+          if (!echecs.length) { r.statut_relance = "prete"; break; }
+          historique.push({ relance, echecs });
+          etape(4, "encours", `relecture : ${controles.filter((x) => x.statut === "ko").map((x) => x.id).join(", ")} ✕ → nouvelle version…`);
+        }
+      }
+      r.plan = M.construirePlan(appel, analyse, verification, conformite, crmAvant);
+      r.duree_totale = secondes();
+      etat.live[id] = r;
+      etat.vue[id] = "live";
+      if (id === VOTRE) etat.edition = false;
+      etat.enCours = false;
+      etat.ctl = null;
+      if (etat.id === id) renderTout(); else renderScenarios();
+    } catch (e) {
+      clearInterval(minuterie);
+      etat.enCours = false;
+      etat.ctl = null;
+      con.hidden = true;
+      const code = e && e.code;
+      if (DEFINITIF.includes(code)) { etat.sample = null; }
+      renderTout();
+      message(ERREURS[code] || "Le service n'a pas répondu. Réessayez dans un instant.", code !== "cancelled");
+    }
+  }
+
+  /* ---------- Copie ---------- */
+  async function copier(texte, el, bouton) {
+    let ok = false;
+    try { await navigator.clipboard.writeText(texte); ok = true; } catch (e) { ok = false; }
+    if (!ok && el) {
+      const sel = window.getSelection(); const plage = document.createRange();
+      plage.selectNodeContents(el); sel.removeAllRanges(); sel.addRange(plage);
+    }
+    if (bouton) { const t = bouton.textContent; bouton.textContent = ok ? "Copié" : "Texte sélectionné"; setTimeout(() => { bouton.textContent = t; }, 1600); }
+  }
+
+  /* ---------- Événements ---------- */
+  document.addEventListener("click", (ev) => {
+    const c = ev.target.closest(".cite[data-ligne]");
+    if (c) { montrerLigne(+c.dataset.ligne, c.dataset.q || ""); return; }
+    const sc = ev.target.closest(".scenario");
+    if (sc) {
+      if (sc.dataset.id === etat.id) return;
+      if (etat.enCours) { message("Une analyse en direct est en cours : arrêtez-la avant de changer d'appel."); return; }
+      etat.anim++;
+      etat.id = sc.dataset.id;
+      $("#panneau").removeAttribute("aria-busy");
+      message("");
+      if (etat.id === VOTRE) { etat.edition = !etat.live[VOTRE]; etat.onglet = etroit() ? (etat.live[VOTRE] ? "cr" : "appel") : "cr"; }
+      renderTout();
+      return;
+    }
+    const o = ev.target.closest(".onglet");
+    if (o) { choisirOnglet(o.dataset.onglet); return; }
+    const a = ev.target.closest("[data-action]");
+    if (!a) return;
+    const r = resultat();
+    switch (a.dataset.action) {
+      case "valider": etat.valide[cle(r)] = true; renderPanneau(); renderEtapesFinales(r); break;
+      case "requetes": etat.requetes[cle(r)] = !etat.requetes[cle(r)]; renderPanneau(); break;
+      case "copier-mail": copier(`Objet : ${r.relance.objet}\n\n${r.relance.corps}`, $("#mail-corps"), a); break;
+      case "copier-questions": copier(r.conformite.questions.map((q, i) => `${i + 1}. ${q}`).join("\n"), $("#liste-questions"), a); break;
+      case "vue-rejeu": etat.vue[etat.id] = "rejeu"; renderTout(); break;
+      case "vue-live": etat.vue[etat.id] = "live"; renderTout(); break;
+      case "modifier": etat.edition = true; renderTout(); if (etroit()) choisirOnglet("appel"); break;
+      case "analyser-saisie": { const t = $("#saisie-texte"); if (t) etat.saisie = t.value; lancerLive(VOTRE, etat.saisie); break; }
+      default: break;
+    }
+  });
+  document.addEventListener("input", (ev) => { if (ev.target.id === "saisie-texte") etat.saisie = ev.target.value; });
+  $("#btn-rejouer").addEventListener("click", rejouerAnim);
+  $("#btn-live").addEventListener("click", () => { const sc = scenario(); if (sc) lancerLive(sc.id, sc.transcription); });
+  $("#btn-stop").addEventListener("click", () => { if (etat.ctl) etat.ctl.abort(); });
+  $("#retour").addEventListener("click", () => { const o = etat.ongletAvant || "cr"; etat.ongletAvant = null; choisirOnglet(o); $("#atelier").scrollIntoView({ block: "start", behavior: reduit() ? "auto" : "smooth" }); });
+  window.matchMedia("(max-width: 999px)").addEventListener("change", () => { if (!etroit() && etat.onglet === "appel") choisirOnglet("cr"); $("#retour").hidden = true; });
+
+  /* ---------- Impact ---------- */
+  function majImpact() {
+    const v = (id) => +$("#" + id).value;
+    const c = v("r-conseillers"), a = v("r-appels"), m1 = v("r-avant"), m2 = Math.min(v("r-apres"), m1);
+    $("#o-conseillers").textContent = c;
+    $("#o-appels").textContent = a;
+    $("#o-avant").textContent = m1 + " min";
+    $("#o-apres").textContent = m2 + " min";
+    const appelsMois = c * a * 21;
+    const heures = (appelsMois * (m1 - m2)) / 60;
+    $("#o-heures").textContent = nf.format(heures) + " h";
+    $("#o-heures-texte").textContent = `rendues aux conseillers, soit environ ${nf.format(heures / 7)} journées de conseil de 7 heures.`;
+    $("#b-avant").style.width = (100 * m1) / 30 + "%";
+    $("#b-apres").style.width = (100 * m2) / 30 + "%";
+    $("#b-avant-v").textContent = m1 + " min";
+    $("#b-apres-v").textContent = m2 + " min";
+    $("#o-appels-mois").textContent = nf.format(appelsMois);
+    const cout = appelsMois * coutMoyen;
+    $("#o-cout").textContent = "≈ " + nf.format(cout) + " $";
+    $("#o-cout-texte").textContent = `de coût API par mois, soit ${usd(heures ? cout / heures : 0, 2)} par heure rendue`;
+  }
+  $("#reglages").addEventListener("input", majImpact);
+
+  /* ---------- Lecteur de code ---------- */
+  const MOTS_PY = "def|class|return|if|elif|else|for|while|in|not|and|or|is|import|from|as|with|try|except|finally|raise|None|True|False|lambda|yield|pass|break|continue|assert|global|nonlocal|async|await";
+  const RE_PY = new RegExp(`("""[\\s\\S]*?"""|'''[\\s\\S]*?'''|[rfbu]?"(?:\\\\.|[^"\\\\\\n])*"|[rfbu]?'(?:\\\\.|[^'\\\\\\n])*'|#[^\\n]*|\\b(?:${MOTS_PY})\\b|\\b\\d+(?:\\.\\d+)?\\b|@\\w+)`, "g");
+  const RE_JSON = /("(?:\\.|[^"\\\n])*"|\b-?\d+(?:\.\d+)?\b|\b(?:true|false|null)\b)/g;
+  function classe(tok) {
+    if (tok.startsWith("#")) return "c";
+    if (tok.startsWith("@")) return "d";
+    if (/^[rfbu]?["']/.test(tok)) return "s";
+    if (/^-?\d/.test(tok)) return "m";
+    return "k";
+  }
+  function colorer(texte, chemin) {
+    const re = chemin.endsWith(".py") ? RE_PY : chemin.endsWith(".json") ? RE_JSON : chemin.endsWith(".toml") ? /("(?:\\.|[^"\\\n])*"|#[^\n]*)/g : null;
+    const lignes = [""];
+    const ajouter = (txt, cls) => {
+      txt.split("\n").forEach((morceau, i) => {
+        if (i > 0) lignes.push("");
+        if (morceau) lignes[lignes.length - 1] += cls ? `<span class="tk-${cls}">${esc(morceau)}</span>` : esc(morceau);
+      });
+    };
+    if (!re) { ajouter(texte, ""); return lignes; }
+    let dernier = 0;
+    re.lastIndex = 0;
+    let m;
+    while ((m = re.exec(texte))) {
+      if (m.index > dernier) ajouter(texte.slice(dernier, m.index), "");
+      ajouter(m[0], chemin.endsWith(".json") ? (m[0].startsWith('"') ? "s" : /^(true|false|null)$/.test(m[0]) ? "k" : "m") : classe(m[0]));
+      dernier = m.index + m[0].length;
+    }
+    ajouter(texte.slice(dernier), "");
+    return lignes;
+  }
+  const cacheCode = {};
+  function ouvrirFichier(chemin, ligne) {
+    const f = CODE.fichiers.find((x) => x.chemin === chemin);
+    if (!f) return;
+    $$(".code-nav button[data-fichier]").forEach((b) => b.setAttribute("aria-current", String(b.dataset.fichier === chemin)));
+    $("#code-fichier").textContent = f.chemin;
+    $("#code-info").textContent = `${f.lignes} lignes`;
+    const lignes = cacheCode[chemin] || (cacheCode[chemin] = colorer(f.contenu, f.chemin));
+    const corps = $("#code-corps");
+    corps.innerHTML = lignes.map((l, i) => `<div class="cl${ligne && i + 1 >= ligne && i + 1 < ligne + 14 ? " vise" : ""}" id="cl-${i + 1}"><span class="n">${i + 1}</span><code>${l || " "}</code></div>`).join("");
+    if (ligne) { const cible = $(`#cl-${Math.max(1, ligne - 2)}`); if (cible) corps.scrollTop = cible.offsetTop; }
+    else corps.scrollTop = 0;
+  }
+  function renderCode() {
+    const nav = $("#code-nav");
+    const groupes = {};
+    CODE.fichiers.forEach((f) => { const g = f.chemin.includes("/") ? f.chemin.split("/")[0] + "/" : "racine"; (groupes[g] = groupes[g] || []).push(f); });
+    nav.innerHTML = `<p>Points d'entrée</p><ul class="entrees">${CODE.entrees.map((e) => `<li><button type="button" data-fichier-entree="${esc(e.chemin)}" data-ligne="${e.ligne}">${esc(e.libelle)}<span>${esc(e.chemin.split("/").pop())}</span></button></li>`).join("")}</ul>`
+      + Object.entries(groupes).map(([g, fs]) => `<p>${esc(g)}</p><ul>${fs.map((f) => `<li><button type="button" data-fichier="${esc(f.chemin)}">${esc(f.chemin.split("/").pop())}<span>${f.lignes}</span></button></li>`).join("")}</ul>`).join("");
+    nav.addEventListener("click", (ev) => {
+      const b = ev.target.closest("button");
+      if (!b) return;
+      if (b.dataset.fichierEntree) ouvrirFichier(b.dataset.fichierEntree, +b.dataset.ligne);
+      else ouvrirFichier(b.dataset.fichier);
+    });
+    const e = CODE.entrees[0];
+    ouvrirFichier(e.chemin, e.ligne);
+  }
+
+  /* ---------- Démarrage ---------- */
+  renderEtapesStructure();
+  renderTout();
+  majImpact();
+  renderCode();
+
+  (async () => {
+    try {
+      if (!window.claude || typeof window.claude.use !== "function") return;
+      const s = await window.claude.use("sample");
+      if (!s) return;
+      etat.sample = s;
+      renderScenarios();
+      renderBoutons();
+      renderMode();
+    } catch (e) { /* pas d'analyse en direct sur cette vue */ }
+  })();
+})();
+</script>

@@ -1,0 +1,31 @@
+{
+  "_commentaire": "Fiches HubSpot fictives telles qu'elles existent AVANT l'appel (créées par les formulaires du site). Numéros de téléphone pris dans la plage réservée à la fiction par l'ARCEP.",
+  "48213": {
+    "firstname": "Julien",
+    "lastname": "Moreau",
+    "email": "julien.moreau@example.com",
+    "phone": "+33 6 39 98 12 34",
+    "lifecyclestage": "lead",
+    "hs_lead_status": "NEW",
+    "source_du_lead": "Simulateur de frais (site)",
+    "jobtitle": "Ingénieur"
+  },
+  "48377": {
+    "firstname": "Claire",
+    "lastname": "Dubois",
+    "email": "claire.dubois@example.com",
+    "phone": "+33 6 39 98 45 67",
+    "lifecyclestage": "lead",
+    "hs_lead_status": "NEW",
+    "source_du_lead": "Demande de rappel (site)"
+  },
+  "48402": {
+    "firstname": "Philippe",
+    "lastname": "Marchand",
+    "email": "p.marchand@example.com",
+    "phone": "+33 6 39 98 70 21",
+    "lifecyclestage": "lead",
+    "hs_lead_status": "NEW",
+    "source_du_lead": "Message entrant"
+  }
+}

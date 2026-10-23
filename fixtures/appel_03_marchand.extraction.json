@@ -1,0 +1,105 @@
+{
+  "compte_rendu": {
+    "resume": "Appel entrant de Philippe Marchand, gérant d'une agence de communication, qui souhaite placer 180 000 € avant vendredi. L'origine des fonds n'a pas été précisée ; une partie serait versée par un associé depuis son propre compte, et le client a proposé un dépôt d'environ 20 000 € en espèces, refusé par la conseillère. Le recueil des besoins n'a pas pu être mené, le client ne souhaitant pas entrer dans le détail. La conseillère a rappelé la procédure et doit envoyer la liste des pièces à fournir.",
+    "points_cles": [
+      {
+        "texte": "Souhaite placer 180 000 € dans un délai très court.",
+        "source": "je voudrais placer 180 000 euros rapidement, il faut que ce soit bouclé avant vendredi"
+      },
+      {
+        "texte": "Origine des fonds non précisée (« des affaires »).",
+        "source": "C'est un peu compliqué, disons que ce sont des affaires"
+      },
+      {
+        "texte": "Une partie des fonds serait virée par un associé depuis son propre compte.",
+        "source": "il fera le virement directement depuis son compte"
+      },
+      {
+        "texte": "Proposition de déposer environ 20 000 € en espèces, refusée par la conseillère.",
+        "source": "J'ai aussi une vingtaine de milliers d'euros en liquide"
+      }
+    ],
+    "questions_client": [
+      {
+        "question": "Peut-il déposer des espèces ?",
+        "reponse": "Non : les versements se font uniquement par virement ou prélèvement depuis un compte à son nom.",
+        "source": "je peux les déposer chez vous ?"
+      }
+    ],
+    "objections": [
+      {
+        "texte": "Refuse de détailler sa situation par téléphone et envisage d'aller ailleurs si la procédure est longue.",
+        "source": "je préfère ne pas rentrer dans les détails par téléphone"
+      }
+    ],
+    "prochaines_etapes": [
+      {
+        "action": "Envoyer la liste des pièces à fournir",
+        "porteur": "conseiller",
+        "echeance": "",
+        "type": "document",
+        "source": "Je vous envoie la liste des pièces à fournir"
+      }
+    ],
+    "intention": "moyenne",
+    "intention_source": "Si c'est trop long, j'irai ailleurs"
+  },
+  "recueil": {
+    "objectifs": {"statut": "partiel", "valeur": "Rendement, sans objectif précis", "source": "Que ça rapporte"},
+    "horizon": {"statut": "manquant", "valeur": "", "source": ""},
+    "situation_familiale": {"statut": "couvert", "valeur": "Divorcé, un fils de 20 ans", "source": "Divorcé, un fils de 20 ans"},
+    "situation_professionnelle": {"statut": "couvert", "valeur": "Gérant d'une agence de communication (SARL)", "source": "Je suis gérant d'une agence de communication, une SARL"},
+    "revenus": {"statut": "couvert", "valeur": "Environ 60 000 € par an", "source": "Je me verse à peu près 60 000 euros par an"},
+    "patrimoine": {"statut": "manquant", "valeur": "", "source": ""},
+    "connaissances_experience": {"statut": "partiel", "valeur": "« Un peu » d'expérience des marchés, non détaillée", "source": "Un peu. Écoutez, je préfère ne pas rentrer dans les détails"},
+    "tolerance_risque": {"statut": "partiel", "valeur": "Recherche de performance, tolérance non évaluée", "source": "Mettez tout sur ce qui marche le mieux"},
+    "capacite_pertes": {"statut": "manquant", "valeur": "", "source": ""},
+    "durabilite": {"statut": "manquant", "valeur": "", "source": ""},
+    "besoin_liquidite": {"statut": "manquant", "valeur": "", "source": ""}
+  },
+  "projet": {
+    "montant_initial_eur": 180000,
+    "montant_source": "je voudrais placer 180 000 euros rapidement",
+    "versement_mensuel_eur": 0,
+    "versement_source": "",
+    "horizon_annees": 0,
+    "profil_pressenti": "indetermine",
+    "profil_source": "",
+    "uc_souhaitee_client_pct": -1,
+    "uc_souhaitee_source": "",
+    "uc_recommandee_conseiller_pct": -1,
+    "uc_recommandee_source": "",
+    "mise_en_garde_orale": "non_aborde",
+    "mise_en_garde_source": ""
+  },
+  "lcb": {
+    "origine_fonds": "floue",
+    "origine_detail": "« des affaires » ; une partie viendrait d'un associé qui lui doit de l'argent",
+    "origine_source": "disons que ce sont des affaires",
+    "revenus_annuels_eur": 60000,
+    "revenus_source": "Je me verse à peu près 60 000 euros par an",
+    "tiers_payeur": "oui",
+    "tiers_payeur_source": "il fera le virement directement depuis son compte",
+    "especes": "oui",
+    "especes_source": "J'ai aussi une vingtaine de milliers d'euros en liquide",
+    "ppe": "non_aborde",
+    "ppe_source": "",
+    "signaux": [
+      {"type": "urgence", "detail": "exige une souscription avant vendredi", "source": "il faut que ce soit bouclé avant vendredi"},
+      {"type": "reticence", "detail": "refuse de détailler sa situation et l'origine des fonds", "source": "je préfère ne pas rentrer dans les détails par téléphone"},
+      {"type": "autre", "detail": "menace de s'adresser ailleurs si la procédure est longue", "source": "Si c'est trop long, j'irai ailleurs"}
+    ]
+  },
+  "crm": {
+    "champs": [
+      {"propriete": "jobtitle", "valeur": "Gérant d'agence de communication (SARL)", "source": "Je suis gérant d'une agence de communication, une SARL"},
+      {"propriete": "situation_familiale", "valeur": "Divorcé, un fils de 20 ans", "source": "Divorcé, un fils de 20 ans"},
+      {"propriete": "revenus_annuels", "valeur": "≈ 60 000 € / an", "source": "Je me verse à peu près 60 000 euros par an"},
+      {"propriete": "origine_des_fonds", "valeur": "Non précisée (« des affaires »), en partie via un associé", "source": "disons que ce sont des affaires"},
+      {"propriete": "montant_envisage", "valeur": "180000", "source": "je voudrais placer 180 000 euros"}
+    ],
+    "etape_transaction": "aucune",
+    "date_cloture_souhaitee": "",
+    "date_cloture_source": ""
+  }
+}

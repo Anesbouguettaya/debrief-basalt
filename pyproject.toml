@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "debrief"
+version = "0.3.0"
+description = "Copilote post-appel pour conseillers en assurance-vie : compte rendu, HubSpot, contrôles DDA / LCB-FT et relance."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Anes Bouguettaya" }]
+dependencies = [
+    "anthropic",
+    "pydantic>=2.7",
+    "tzdata; sys_platform == 'win32'",
+]
+
+[project.optional-dependencies]
+mcp = ["mcp"]
+dev = ["pytest"]
+
+[project.scripts]
+debrief = "debrief.__main__:main"
+
+[tool.setuptools]
+packages = ["debrief"]

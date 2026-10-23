@@ -1,0 +1,26 @@
+# Identifiant : appel_03_marchand
+# Appel : entrant (demande d'ouverture)
+# Date : 2026-10-22 14:05
+# Conseiller : Léa Fontaine
+# Client : Philippe Marchand
+# Contact HubSpot : 48402
+[00:00] Léa Fontaine : Bonjour Monsieur Marchand, Léa Fontaine de Basalt. Vous avez laissé un message pour ouvrir un contrat, c'est bien ça ?
+[00:07] Philippe Marchand : Oui, bonjour. Je vais être direct : je voudrais placer 180 000 euros rapidement, il faut que ce soit bouclé avant vendredi.
+[00:15] Léa Fontaine : D'accord. Avant de parler placement, j'ai besoin de mieux comprendre votre situation. Quelle est votre activité ?
+[00:21] Philippe Marchand : Je suis gérant d'une agence de communication, une SARL. Je me verse à peu près 60 000 euros par an.
+[00:28] Léa Fontaine : Vous êtes marié, vous avez des enfants ?
+[00:31] Philippe Marchand : Divorcé, un fils de 20 ans.
+[00:34] Léa Fontaine : Merci. Et ces 180 000 euros, d'où proviennent-ils ?
+[00:38] Philippe Marchand : C'est un peu compliqué, disons que ce sont des affaires. Une partie vient d'un associé qui me doit de l'argent, il fera le virement directement depuis son compte, ce sera plus simple.
+[00:50] Léa Fontaine : Je dois vous préciser que les versements doivent obligatoirement venir d'un compte à votre nom.
+[00:55] Philippe Marchand : Ah. Bon, on verra. J'ai aussi une vingtaine de milliers d'euros en liquide, je peux les déposer chez vous ?
+[01:02] Léa Fontaine : Nous n'acceptons pas d'espèces. Les versements se font uniquement par virement ou par prélèvement depuis un compte à votre nom.
+[01:09] Philippe Marchand : D'accord, d'accord.
+[01:11] Léa Fontaine : Quel serait votre objectif avec ce placement ?
+[01:14] Philippe Marchand : Que ça rapporte. Mettez tout sur ce qui marche le mieux.
+[01:18] Léa Fontaine : Pour vous conseiller, j'ai besoin de connaître votre horizon de placement et votre rapport au risque. Vous avez déjà investi sur les marchés ?
+[01:25] Philippe Marchand : Un peu. Écoutez, je préfère ne pas rentrer dans les détails par téléphone, envoyez-moi juste les papiers à signer.
+[01:32] Léa Fontaine : Je comprends. Pour toute souscription, nous devons justifier l'origine des fonds et compléter un questionnaire sur votre situation. Je vous envoie la liste des pièces à fournir.
+[01:42] Philippe Marchand : Si c'est trop long, j'irai ailleurs.
+[01:45] Léa Fontaine : La procédure est la même chez tous les assureurs. Je reste disponible si vous avez des questions.
+[01:50] Philippe Marchand : OK. Au revoir.

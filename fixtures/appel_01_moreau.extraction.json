@@ -1,0 +1,129 @@
+{
+  "compte_rendu": {
+    "resume": "Rappel après une simulation en ligne. Julien Moreau, ingénieur marié et père de deux enfants, souhaite placer 80 000 € sur Basalt Life, dont 60 000 € issus d'une succession, puis 300 € par mois, pour financer les études de ses enfants. Profil pressenti équilibré : il envisage 40 % de fonds en euros et 60 % d'ETF, contre 50/50 proposé par la conseillère. Il conserve son contrat bancaire de 2014 pour son antériorité fiscale. Décision attendue après échange avec son épouse ; rappel prévu le mardi 27 octobre à 18h30.",
+    "points_cles": [
+      {
+        "texte": "Contrat bancaire existant depuis 2014 (environ 35 000 €), avec 3 % de frais sur versements et 0,85 % de frais de gestion annuels.",
+        "source": "j'ai 3 % de frais sur chaque versement et 0,85 % de frais de gestion par an"
+      },
+      {
+        "texte": "Projet de 80 000 €, dont 60 000 € de succession débloqués par le notaire courant novembre.",
+        "source": "je vais recevoir 60 000 euros de la succession, le notaire doit débloquer les fonds courant novembre"
+      },
+      {
+        "texte": "Objectif principal : financer les études de ses deux enfants (7 et 4 ans), puis préparer la transmission.",
+        "source": "Surtout financer les études des enfants. On a deux enfants de 7 et 4 ans"
+      },
+      {
+        "texte": "Allocation souhaitée : 40 % fonds en euros, 60 % ETF (la conseillère proposait 50/50).",
+        "source": "Je pensais plutôt 40 % en fonds euros et 60 % en ETF, vu la durée"
+      },
+      {
+        "texte": "Versements programmés envisagés : 300 € par mois.",
+        "source": "je pensais ajouter 300 euros par mois"
+      }
+    ],
+    "questions_client": [
+      {
+        "question": "Peut-il transférer son contrat bancaire chez Basalt ?",
+        "reponse": "Non : changer d'assureur impose de clôturer le contrat. Comme il a plus de huit ans, il est conseillé de le conserver et d'orienter les nouveaux versements vers Basalt Life.",
+        "source": "on ne peut pas le transférer chez nous : changer d'assureur oblige à clôturer le contrat"
+      }
+    ],
+    "objections": [
+      {
+        "texte": "Crainte qu'il soit compliqué de suivre deux contrats ; réponse : suivi depuis l'espace en ligne et interlocutrice unique.",
+        "source": "Ma crainte, c'est que ce soit compliqué de suivre deux contrats"
+      }
+    ],
+    "prochaines_etapes": [
+      {
+        "action": "Envoyer la simulation comparative (contrat actuel / Basalt Life) et la liste des pièces",
+        "porteur": "conseiller",
+        "echeance": "2026-10-22T20:00",
+        "type": "email",
+        "source": "Je vous envoie ce soir une simulation qui compare votre contrat actuel et Basalt Life"
+      },
+      {
+        "action": "Demander l'attestation de succession au notaire",
+        "porteur": "client",
+        "echeance": "",
+        "type": "document",
+        "source": "je demanderai l'attestation au notaire"
+      },
+      {
+        "action": "Rappeler M. Moreau pour sa décision, prise avec son épouse",
+        "porteur": "conseiller",
+        "echeance": "2026-10-27T18:30",
+        "type": "appel",
+        "source": "C'est noté, mardi 27 octobre à 18h30"
+      }
+    ],
+    "intention": "forte",
+    "intention_source": "si c'est bon pour nous, j'aimerais que ce soit fait avant la mi-novembre"
+  },
+  "recueil": {
+    "objectifs": {"statut": "couvert", "valeur": "Études des enfants, puis transmission", "source": "Surtout financer les études des enfants"},
+    "horizon": {"statut": "couvert", "valeur": "Environ 12 ans", "source": "pas avant une douzaine d'années"},
+    "situation_familiale": {"statut": "couvert", "valeur": "Marié sans contrat, deux enfants de 7 et 4 ans", "source": "Marié, sans contrat de mariage"},
+    "situation_professionnelle": {"statut": "couvert", "valeur": "Ingénieur dans l'aéronautique, cadre", "source": "Je suis ingénieur dans l'aéronautique, cadre"},
+    "revenus": {"statut": "couvert", "valeur": "Environ 95 000 € nets par an pour le foyer", "source": "À deux, on gagne environ 95 000 euros nets par an"},
+    "patrimoine": {"statut": "couvert", "valeur": "Assurance-vie bancaire 35 000 €, PEA 20 000 €, livrets 15 000 €, propriétaires de leur résidence principale", "source": "on garde 15 000 euros sur les livrets, on n'y touche pas"},
+    "connaissances_experience": {"statut": "couvert", "valeur": "PEA investi en ETF depuis 2021", "source": "J'ai un PEA depuis 2021, uniquement des ETF"},
+    "tolerance_risque": {"statut": "couvert", "valeur": "Accepte des baisses temporaires sur un horizon long, pas tout en actions", "source": "Je suis prêt à accepter que ça baisse certaines années"},
+    "capacite_pertes": {"statut": "couvert", "valeur": "Une baisse de 20 % n'affecterait pas le train de vie", "source": "ça ne changerait rien à notre train de vie"},
+    "durabilite": {"statut": "manquant", "valeur": "", "source": ""},
+    "besoin_liquidite": {"statut": "couvert", "valeur": "Pas de besoin avant une douzaine d'années ; épargne de précaution conservée", "source": "pas avant une douzaine d'années, quand l'aîné entrera dans le supérieur"}
+  },
+  "projet": {
+    "montant_initial_eur": 80000,
+    "montant_source": "je voudrais placer 80 000 euros",
+    "versement_mensuel_eur": 300,
+    "versement_source": "je pensais ajouter 300 euros par mois",
+    "horizon_annees": 12,
+    "profil_pressenti": "equilibre",
+    "profil_source": "Je suis prêt à accepter que ça baisse certaines années, tant que sur 10 ou 15 ans ça progresse",
+    "uc_souhaitee_client_pct": 60,
+    "uc_souhaitee_source": "Je pensais plutôt 40 % en fonds euros et 60 % en ETF",
+    "uc_recommandee_conseiller_pct": 50,
+    "uc_recommandee_source": "je vous proposerais 50 % sur le fonds en euros et 50 % sur des ETF monde",
+    "mise_en_garde_orale": "oui",
+    "mise_en_garde_source": "la partie ETF peut baisser et présente un risque de perte en capital"
+  },
+  "lcb": {
+    "origine_fonds": "succession",
+    "origine_detail": "60 000 € de la succession de sa grand-mère et 20 000 € d'épargne",
+    "origine_source": "je vais recevoir 60 000 euros de la succession",
+    "revenus_annuels_eur": 95000,
+    "revenus_source": "on gagne environ 95 000 euros nets par an",
+    "tiers_payeur": "non_aborde",
+    "tiers_payeur_source": "",
+    "especes": "non_aborde",
+    "especes_source": "",
+    "ppe": "non_aborde",
+    "ppe_source": "",
+    "signaux": []
+  },
+  "crm": {
+    "champs": [
+      {"propriete": "jobtitle", "valeur": "Ingénieur aéronautique (cadre)", "source": "Je suis ingénieur dans l'aéronautique, cadre"},
+      {"propriete": "situation_familiale", "valeur": "Marié sans contrat, 2 enfants (7 et 4 ans)", "source": "Marié, sans contrat de mariage"},
+      {"propriete": "revenus_annuels", "valeur": "≈ 95 000 € nets / an (foyer)", "source": "on gagne environ 95 000 euros nets par an"},
+      {"propriete": "patrimoine_financier", "valeur": "AV bancaire ≈ 35 k€ · PEA ≈ 20 k€ · livrets 15 k€", "source": "il y a à peu près 35 000 euros dessus"},
+      {"propriete": "patrimoine_immobilier", "valeur": "Résidence principale estimée à 450 000 €", "source": "notre appartement vaut environ 450 000 euros"},
+      {"propriete": "objectif_principal", "valeur": "Études des enfants, puis transmission", "source": "Surtout financer les études des enfants"},
+      {"propriete": "horizon_placement", "valeur": "12 ans et plus", "source": "pas avant une douzaine d'années"},
+      {"propriete": "profil_risque_pressenti", "valeur": "Équilibré", "source": "Je suis prêt à accepter que ça baisse certaines années"},
+      {"propriete": "experience_financiere", "valeur": "PEA en ETF depuis 2021", "source": "J'ai un PEA depuis 2021, uniquement des ETF"},
+      {"propriete": "origine_des_fonds", "valeur": "Succession (60 000 €) + épargne (20 000 €)", "source": "je vais recevoir 60 000 euros de la succession"},
+      {"propriete": "montant_envisage", "valeur": "80000", "source": "je voudrais placer 80 000 euros"},
+      {"propriete": "versement_programme", "valeur": "300 € / mois", "source": "je pensais ajouter 300 euros par mois"},
+      {"propriete": "contrats_existants", "valeur": "Assurance-vie bancaire ouverte en 2014 (≈ 35 000 €), à conserver", "source": "J'ai une assurance-vie à la banque depuis 2014"},
+      {"propriete": "clause_beneficiaire", "valeur": "Conjointe, à défaut enfants à parts égales", "source": "Ma femme, et à défaut nos enfants à parts égales"},
+      {"propriete": "date_prochain_contact", "valeur": "Mardi 27/10 à 18h30", "source": "mardi 27 octobre à 18h30"}
+    ],
+    "etape_transaction": "presentationscheduled",
+    "date_cloture_souhaitee": "2026-11-15",
+    "date_cloture_source": "j'aimerais que ce soit fait avant la mi-novembre"
+  }
+}

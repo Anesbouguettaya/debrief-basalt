@@ -1,0 +1,84 @@
+{
+  "_commentaire": "Vérité terrain établie à la main pour chaque appel du jeu d'évaluation. À enrichir avec de vrais appels anonymisés pendant le pilote.",
+  "appel_01_moreau": {
+    "projet": {
+      "montant_initial_eur": 80000,
+      "versement_mensuel_eur": 300,
+      "profil_pressenti": "equilibre",
+      "uc_souhaitee_client_pct": 60,
+      "uc_recommandee_conseiller_pct": 50
+    },
+    "lcb": {
+      "origine_fonds": "succession",
+      "tiers_payeur": "non_aborde",
+      "especes": "non_aborde"
+    },
+    "recueil_non_couverts": [
+      "durabilite"
+    ],
+    "niveau_lcb": "standard",
+    "relance_suspendue": false,
+    "regles": {
+      "ADQ-03": "ok",
+      "LCB-02": "ok",
+      "LCB-04": "ok"
+    },
+    "echeances": [
+      "2026-10-27T18:30"
+    ]
+  },
+  "appel_02_dubois": {
+    "projet": {
+      "montant_initial_eur": 250000,
+      "profil_pressenti": "prudent",
+      "uc_souhaitee_client_pct": 40,
+      "uc_recommandee_conseiller_pct": 25
+    },
+    "lcb": {
+      "origine_fonds": "cession_immobiliere",
+      "tiers_payeur": "non_aborde",
+      "especes": "non_aborde"
+    },
+    "recueil_non_couverts": [],
+    "niveau_lcb": "standard",
+    "relance_suspendue": false,
+    "regles": {
+      "ADQ-03": "vigilance",
+      "ADQ-04": "ok",
+      "LCB-02": "action",
+      "LCB-03": "ok"
+    },
+    "echeances": [
+      "2026-10-29T10:00"
+    ]
+  },
+  "appel_03_marchand": {
+    "projet": {
+      "montant_initial_eur": 180000,
+      "profil_pressenti": "indetermine"
+    },
+    "lcb": {
+      "origine_fonds": "floue",
+      "tiers_payeur": "oui",
+      "especes": "oui"
+    },
+    "recueil_non_couverts": [
+      "capacite_pertes",
+      "connaissances_experience",
+      "durabilite",
+      "horizon",
+      "objectifs",
+      "patrimoine",
+      "tolerance_risque"
+    ],
+    "niveau_lcb": "escalade",
+    "relance_suspendue": true,
+    "regles": {
+      "LCB-01": "escalade",
+      "LCB-04": "escalade",
+      "LCB-05": "escalade",
+      "LCB-07": "vigilance"
+    },
+    "echeances": []
+  }
+}

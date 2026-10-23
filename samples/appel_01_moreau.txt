@@ -1,0 +1,44 @@
+# Identifiant : appel_01_moreau
+# Appel : sortant (rappel après une simulation en ligne)
+# Date : 2026-10-22 17:42
+# Conseiller : Léa Fontaine
+# Client : Julien Moreau
+# Contact HubSpot : 48213
+[00:00] Léa Fontaine : Bonjour Monsieur Moreau, Léa Fontaine de Basalt. Vous avez fait une simulation sur notre site hier soir et demandé à être rappelé. C'est toujours un bon moment ?
+[00:09] Julien Moreau : Bonjour, oui, parfait, j'ai une vingtaine de minutes devant moi.
+[00:13] Léa Fontaine : Super. Qu'est-ce qui vous a amené à faire la simulation ?
+[00:17] Julien Moreau : J'ai une assurance-vie à la banque depuis 2014, il y a à peu près 35 000 euros dessus. En voyant les frais sur votre simulateur, j'ai un peu halluciné : j'ai 3 % de frais sur chaque versement et 0,85 % de frais de gestion par an.
+[00:33] Léa Fontaine : C'est malheureusement assez courant dans les réseaux bancaires. Et aujourd'hui, vous avez un nouveau projet d'épargne ?
+[00:40] Julien Moreau : Oui. Ma grand-mère est décédée au printemps et je vais recevoir 60 000 euros de la succession, le notaire doit débloquer les fonds courant novembre. Avec ce qu'on a mis de côté, je voudrais placer 80 000 euros.
+[00:54] Léa Fontaine : Toutes mes condoléances. Ces 80 000 euros, ce serait pour quel objectif ?
+[01:00] Julien Moreau : Surtout financer les études des enfants. On a deux enfants de 7 et 4 ans. Et à plus long terme, préparer un peu la transmission.
+[01:10] Léa Fontaine : Donc vous n'aurez pas besoin de cet argent à court terme ?
+[01:14] Julien Moreau : Non, pas avant une douzaine d'années, quand l'aîné entrera dans le supérieur.
+[01:20] Léa Fontaine : Et vous gardez une épargne de précaution à côté ?
+[01:23] Julien Moreau : Oui, on garde 15 000 euros sur les livrets, on n'y touche pas.
+[01:28] Léa Fontaine : Parfait. Vous êtes marié, pacsé ?
+[01:31] Julien Moreau : Marié, sans contrat de mariage. Et on est propriétaires de notre appartement depuis 2019.
+[01:38] Léa Fontaine : Et côté professionnel ?
+[01:40] Julien Moreau : Je suis ingénieur dans l'aéronautique, cadre. À deux, on gagne environ 95 000 euros nets par an.
+[01:48] Léa Fontaine : Merci. Vous avez déjà investi en bourse en dehors de l'assurance-vie ?
+[01:52] Julien Moreau : J'ai un PEA depuis 2021, uniquement des ETF, en gros un ETF monde. Il y a environ 20 000 euros dessus.
+[02:01] Léa Fontaine : Vous connaissez donc les variations des marchés. Si votre placement baissait de 20 % une année, comment le vivriez-vous ?
+[02:09] Julien Moreau : Honnêtement, ça ne changerait rien à notre train de vie. Je suis prêt à accepter que ça baisse certaines années, tant que sur 10 ou 15 ans ça progresse. Mais je ne mettrais pas tout en actions.
+[02:22] Léa Fontaine : C'est très clair. Basalt Life est sans frais d'entrée ni frais d'arbitrage, avec 0,45 % de frais de gestion par an sur les unités de compte. Le fonds en euros a servi plus de 3 % net en 2025, sachant que les performances passées ne préjugent pas des performances futures. Pour votre horizon, je vous proposerais 50 % sur le fonds en euros et 50 % sur des ETF monde.
+[02:45] Julien Moreau : Je pensais plutôt 40 % en fonds euros et 60 % en ETF, vu la durée.
+[02:50] Léa Fontaine : C'est cohérent avec ce que vous m'avez dit, à condition de garder en tête que la partie ETF peut baisser et présente un risque de perte en capital. On peut aussi programmer des versements réguliers.
+[03:01] Julien Moreau : Oui, je pensais ajouter 300 euros par mois.
+[03:05] Léa Fontaine : Très bien. Votre contrat à la banque, en revanche, on ne peut pas le transférer chez nous : changer d'assureur oblige à clôturer le contrat. Comme il a plus de huit ans, il bénéficie d'une fiscalité avantageuse sur les gains, donc je vous conseille de le garder et d'orienter vos nouveaux versements chez nous.
+[03:24] Julien Moreau : Ah, c'était justement ma question. Donc je garde les deux.
+[03:28] Léa Fontaine : Exactement. Et rien n'est bloqué : vous pouvez faire un rachat partiel à tout moment, la fiscalité est simplement plus douce après huit ans.
+[03:36] Julien Moreau : Ma crainte, c'est que ce soit compliqué de suivre deux contrats.
+[03:40] Léa Fontaine : Tout se suit depuis votre espace en ligne, et je reste votre interlocutrice. Pour la clause bénéficiaire, vous avez une idée ?
+[03:47] Julien Moreau : Ma femme, et à défaut nos enfants à parts égales.
+[03:51] Léa Fontaine : C'est la clause standard. Côté justificatifs, il faudra une pièce d'identité, un justificatif de domicile, un RIB et, pour les fonds de la succession, l'attestation du notaire.
+[04:03] Julien Moreau : Pas de souci, je demanderai l'attestation au notaire.
+[04:07] Léa Fontaine : Je vous envoie ce soir une simulation qui compare votre contrat actuel et Basalt Life, avec la liste des pièces.
+[04:13] Julien Moreau : Super. Vous pouvez me rappeler mardi prochain vers 18h30 ? J'aurai regardé ça avec ma femme.
+[04:19] Léa Fontaine : C'est noté, mardi 27 octobre à 18h30.
+[04:23] Julien Moreau : Et si c'est bon pour nous, j'aimerais que ce soit fait avant la mi-novembre, quand le notaire aura débloqué les fonds.
+[04:30] Léa Fontaine : Ça laisse le temps. Merci Monsieur Moreau, très bonne soirée.
+[04:34] Julien Moreau : Merci à vous, au revoir.
