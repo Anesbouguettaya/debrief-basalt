@@ -4,9 +4,11 @@
 
 Débrief est un agent IA post-appel pour les conseillers d'un courtier en assurance-vie. À partir de la transcription d'un appel, il produit le compte rendu, prépare la mise à jour HubSpot, contrôle le recueil du devoir de conseil (DDA) et les signaux LCB-FT, puis rédige l'e-mail de relance. Chaque information est sourcée dans l'appel, chaque règle de conformité est du code testé, et rien n'est écrit sans la validation du conseiller.
 
-Prototype réalisé par **Anes Bouguettaya** pour la candidature au stage / alternance IA Engineer chez Basalt (chantier n°1 de l'offre : l'automatisation commerciale). Appels, clients et conseillers fictifs. Projet indépendant, sans lien avec Basalt ni HubSpot.
+Prototype réalisé par **Anas Bouguettaya** pour la candidature au stage / alternance IA Engineer chez Basalt (chantier n°1 de l'offre : l'automatisation commerciale). Appels, clients et conseillers fictifs. Projet indépendant, sans lien avec Basalt ni HubSpot.
 
 **Démo interactive :** https://anesbouguettaya.github.io/debrief-basalt/ (ou `demo/index.html`, à ouvrir dans un navigateur).
+
+**Deuxième prototype, Trajectoire :** https://anesbouguettaya.github.io/debrief-basalt/prevision/ : prévoir la croissance d'une jeune fintech avec peu de données (filtre de Kalman, fourchettes d'incertitude, test sur le passé). Voir [plus bas](#trajectoire--prévoir-la-croissance-avec-peu-de-données).
 
 ---
 
@@ -138,6 +140,25 @@ n8n ou Make sont parfaits pour la plomberie : webhook de fin d'appel de l'outil 
 - Les seuils et références réglementaires sont des exemples à valider avec la conformité et l'assureur.
 - Le profil de risque est « pressenti » : il ne remplace pas le questionnaire.
 
+## Trajectoire : prévoir la croissance avec peu de données
+
+Deuxième prototype, dans `prevision/` : prévoir les nouveaux clients et l'encours d'une jeune entreprise qui n'a que quelques mois d'historique. Avec si peu de points, un modèle à milliers de paramètres apprendrait le bruit ; Trajectoire utilise un filtre de Kalman, la méthode qui permet à un robot de se repérer avec des capteurs imparfaits.
+
+| Étape | Méthode |
+|---|---|
+| Tendance | Filtre de Kalman sur le log des nouveaux clients mensuels (niveau + croissance amortie), trois variances au maximum de vraisemblance |
+| Ralentissement | Aucun, modéré ou fort : choisi par l'erreur de prévision à 3 mois sur l'historique, sans regarder la suite |
+| Montants | Premier versement moyen et versement mensuel des clients déjà là, par moindres carrés |
+| Encours | 2 000 simulations (acquisition, versements, marchés, rachats) : fourchettes 50 % et 80 %, probabilité et date d'atteinte d'un objectif |
+
+Sur les données fictives : 12,3 % d'erreur moyenne à 3 mois sur les nouveaux clients (contre 14,9 % en reconduisant le dernier mois connu), et la réalité dans la fourchette à 80 % 10 fois sur 11. La page permet de rejouer l'historique mois par mois et de coller ses propres chiffres : le calcul se fait dans le navigateur, rien n'est envoyé.
+
+```bash
+node --test prevision/test_moteur.js     # 12 tests du moteur, sans dépendance
+```
+
+Le moteur (`prevision/moteur.js`) tient dans un seul fichier JavaScript sans dépendance : il tourne dans le navigateur, dans Node et dans un nœud Code de n8n, pour un point mensuel automatique (chiffres HubSpot → prévision → Slack, avec une alerte quand un mois sort de la fourchette).
+
 ## Structure
 
 ```
@@ -155,6 +176,7 @@ debrief/
   evals.py         banc d'évaluation
   mcp_server.py    serveur MCP
 demo/              page de démo autonome et moteur JavaScript (parité vérifiée avec le Python)
+prevision/         Trajectoire : moteur de prévision, page et tests
 samples/           appels fictifs et fiches CRM « avant »
 fixtures/          sorties enregistrées du modèle
 evals/             vérité terrain

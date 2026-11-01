@@ -8,7 +8,7 @@ version = "0.3.0"
 description = "Copilote post-appel pour conseillers en assurance-vie : compte rendu, HubSpot, contrôles DDA / LCB-FT et relance."
 readme = "README.md"
 requires-python = ">=3.10"
-authors = [{ name = "Anes Bouguettaya" }]
+authors = [{ name = "Anas Bouguettaya" }]
 dependencies = [
     "anthropic",
     "pydantic>=2.7",
